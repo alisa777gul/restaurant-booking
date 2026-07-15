@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Reservation {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  phone String
+
+  email String
+
+
+  date String
+
+  time String
+
+
+  guests String
+
+
+  status String @default("PENDING")
+
+
+  createdAt DateTime @default(now())
+}
+
+model AvailableTime {
+  id Int @id @default(autoincrement())
+
+  time String @unique
+
+  active Boolean @default(true)
+}
+
+
+
+model BlockedDate {
+  id Int @id @default(autoincrement())
+
+  date String @unique
+
+  reason String?
+}
