@@ -1,6 +1,5 @@
 "use client";
 
-
 import { usePathname } from "next/navigation";
 
 import Sidebar from "@/components/admin/Sidebar";
@@ -19,7 +18,6 @@ export default function AdminLayout({
 }) {
 
 
-
   const pathname = usePathname();
 
 
@@ -29,7 +27,9 @@ export default function AdminLayout({
 
 
 
-  // login без sidebar и topbar
+
+
+  // Login page без панели
 
   if (isLoginPage) {
 
@@ -44,55 +44,27 @@ export default function AdminLayout({
 
 
 
+
+
   return (
 
-    <div
-      className="
-      flex
-      min-h-screen
-      bg-[#0b0b0b]
-      text-white
-      "
-    >
 
+  <div className="flex min-h-screen bg-[#0b0b0b] text-white">
 
+  <Sidebar />
 
-      <Sidebar />
+  <div className="flex-1 min-w-0">
 
+    <Topbar />
 
+    <main className="p-4 sm:p-6 lg:p-8">
+      {children}
+    </main>
 
+  </div>
 
-      <div
-        className="
-        flex-1
-        min-w-0
-        "
-      >
+</div>
 
-
-
-        <Topbar />
-
-
-
-
-        <main
-          className="
-          p-8
-          "
-        >
-
-          {children}
-
-        </main>
-
-
-
-      </div>
-
-
-
-    </div>
 
   );
 

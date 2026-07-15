@@ -5,7 +5,10 @@ import { useMemo, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import "./calendar.css";
+
 import TimeSlots from "@/components/admin/TimeSlots";
+import ReservationModal from "@/components/admin/ReservationModal";
+
 import {
   CalendarDays,
   Clock,
@@ -14,18 +17,16 @@ import {
   Mail,
 } from "lucide-react";
 
-import ReservationModal from "@/components/admin/ReservationModal";
-
 
 type Reservation = {
-  id:number;
-  name:string;
-  phone:string;
-  email:string;
-  date:string;
-  time:string;
-  guests:string;
-  status:string;
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: string;
+  status: string;
 };
 
 
@@ -35,11 +36,11 @@ type Props = {
   onUpdate: (
     id:number,
     status:string
-  )=>void;
+  ) => void;
 
   onDelete: (
     id:number
-  )=>void;
+  ) => void;
 };
 
 
@@ -58,12 +59,12 @@ function formatDate(date:Date){
 
 function normalizeDate(value:string){
 
-  if(!value)
-    return "";
+  if(!value) return "";
 
   return value.split("T")[0];
 
 }
+
 
 
 
@@ -91,7 +92,6 @@ useState<Reservation | null>(null);
 
 
 
-
 const selectedDay =
 formatDate(selectedDate);
 
@@ -105,7 +105,7 @@ useMemo(()=>{
 
 return reservations
 
-.filter(item=>
+.filter(item =>
 
 normalizeDate(item.date)
 ===
@@ -131,6 +131,7 @@ selectedDay
 
 
 
+
 const bookedDays =
 useMemo(()=>{
 
@@ -148,7 +149,10 @@ normalizeDate(item.date)
 );
 
 
-},[reservations]);
+},[
+reservations
+]);
+
 
 
 
@@ -162,9 +166,14 @@ return (
 
 <div
 className="
-grid
-xl:grid-cols-[420px_1fr]
-gap-8
+flex
+flex-col
+gap-5
+
+lg:grid
+lg:grid-cols-[360px_1fr]
+lg:gap-8
+
 items-start
 "
 >
@@ -179,19 +188,27 @@ className="
 bg-[#111]
 border
 border-neutral-800
-rounded-3xl
-p-7
+
+rounded-2xl
+sm:rounded-3xl
+
+p-4
+sm:p-6
+
 shadow-xl
+
+overflow-hidden
 "
 >
+
 
 
 <div
 className="
 flex
 items-center
-gap-4
-mb-7
+gap-3
+mb-5
 "
 >
 
@@ -200,32 +217,39 @@ mb-7
 className="
 p-3
 rounded-xl
+
 bg-yellow-500/10
 text-yellow-400
 "
 >
 
-<CalendarDays size={25}/>
+<CalendarDays size={24}/>
 
 </div>
 
 
+
 <div>
 
-<h2 className="
-text-xl
+<h2
+className="
+text-lg
+sm:text-xl
 font-bold
-">
+"
+>
 
 Calendar
 
 </h2>
 
 
-<p className="
+<p
+className="
 text-neutral-500
 text-sm
-">
+"
+>
 
 Reservation dates
 
@@ -254,13 +278,16 @@ setSelectedDate(date);
 
 }}
 
+
 modifiers={{
 booked:bookedDays
 }}
 
+
 modifiersClassNames={{
 booked:"booked-day"
 }}
+
 
 />
 
@@ -279,32 +306,48 @@ booked:"booked-day"
 {/* RESERVATIONS */}
 
 
+
 <div
 className="
 bg-[#111]
+
 border
 border-neutral-800
-rounded-3xl
-p-7
-min-h-[560px]
+
+rounded-2xl
+sm:rounded-3xl
+
+p-4
+sm:p-6
+lg:p-7
+
 "
 >
+
+
 
 
 
 <div
 className="
-mb-8
+mb-6
 "
 >
+
 
 
 <h1
 className="
-text-3xl
+text-xl
+sm:text-2xl
+lg:text-3xl
+
 font-bold
+
+leading-tight
 "
 >
+
 
 {
 selectedDate.toLocaleDateString(
@@ -318,13 +361,18 @@ year:"numeric"
 )
 }
 
+
 </h1>
+
 
 
 <p
 className="
 text-neutral-500
-mt-2
+
+mt-1
+
+text-sm
 "
 >
 
@@ -332,10 +380,26 @@ mt-2
 
 </p>
 
+
+
+
+
+<div className="mt-6">
+
 <TimeSlots
- date={selectedDay}
+
+date={selectedDay}
+
 />
+
 </div>
+
+
+
+</div>
+
+
+
 
 
 
@@ -347,13 +411,18 @@ mt-2
 dayReservations.length === 0 ? (
 
 
+
 <div
 className="
-h-[320px]
+min-h-60
+
+sm:min-h-80
+
 flex
 flex-col
 items-center
 justify-center
+
 text-neutral-500
 "
 >
@@ -386,9 +455,11 @@ No reservations
 (
 
 
+
 <div
 className="
-space-y-4
+space-y-3
+sm:space-y-4
 "
 >
 
@@ -397,11 +468,13 @@ space-y-4
 dayReservations.map(item=>(
 
 
+
 <button
 
 key={item.id}
 
 type="button"
+
 
 onClick={()=>{
 
@@ -410,29 +483,49 @@ setSelectedReservation(item);
 }}
 
 
+
 className="
 w-full
+
 text-left
+
 bg-neutral-900
+
 border
 border-neutral-800
-rounded-2xl
-p-5
+
+rounded-xl
+sm:rounded-2xl
+
+p-4
+sm:p-5
+
 hover:border-yellow-500
+
 transition
 "
 
 >
 
 
+
+
 <div
 className="
 flex
-justify-between
-items-start
-gap-5
+
+flex-col
+
+gap-4
+
+sm:flex-row
+
+sm:justify-between
+
+sm:items-start
 "
 >
+
 
 
 <div
@@ -442,10 +535,13 @@ flex-1
 >
 
 
+
 <h3
 className="
 font-bold
-text-lg
+
+text-base
+sm:text-lg
 "
 >
 
@@ -456,13 +552,20 @@ text-lg
 
 
 
+
 <div
 className="
 flex
+flex-wrap
+
 items-center
-gap-6
+
+gap-4
+
 mt-3
+
 text-sm
+
 text-neutral-400
 "
 >
@@ -483,6 +586,7 @@ gap-2
 </span>
 
 
+
 <span
 className="
 flex
@@ -501,6 +605,7 @@ gap-2
 </div>
 
 
+
 </div>
 
 
@@ -512,14 +617,25 @@ gap-2
 <span
 
 className={`
+
 inline-flex
+
 justify-center
-min-w-[95px]
+
+w-fit
+
+min-w-23.75
+
 px-3
+
 py-1.5
+
 rounded-full
+
 text-xs
+
 font-semibold
+
 
 ${
 item.status==="CONFIRMED"
@@ -542,13 +658,17 @@ item.status==="CANCELLED"
 
 }
 
+
 `}
 
 >
 
+
 {item.status}
 
+
 </span>
+
 
 
 
@@ -560,16 +680,31 @@ item.status==="CANCELLED"
 
 
 
+
+
+
 <div
+
 className="
 flex
-items-center
-gap-6
+
+flex-col
+
+gap-2
+
 mt-5
+
 text-xs
+
 text-neutral-500
+
+sm:flex-row
+
+sm:gap-6
 "
+
 >
+
 
 
 <span
@@ -577,6 +712,8 @@ className="
 flex
 items-center
 gap-2
+
+break-all
 "
 >
 
@@ -589,11 +726,15 @@ gap-2
 
 
 
+
+
 <span
 className="
 flex
 items-center
 gap-2
+
+break-all
 "
 >
 
@@ -602,6 +743,7 @@ gap-2
 {item.email}
 
 </span>
+
 
 
 
@@ -619,10 +761,12 @@ gap-2
 }
 
 
+
 </div>
 
 
 )
+
 
 }
 
@@ -634,8 +778,9 @@ gap-2
 
 
 
-
 </div>
+
+
 
 
 
@@ -649,7 +794,11 @@ selectedReservation && (
 
 <ReservationModal
 
-reservation={selectedReservation}
+
+reservation={
+selectedReservation
+}
+
 
 
 onClose={()=>{
@@ -660,29 +809,39 @@ setSelectedReservation(null);
 
 
 
+
 onUpdate={(id,status)=>{
+
 
 onUpdate(
 id,
 status
 );
 
+
 setSelectedReservation(null);
 
+
 }}
+
+
 
 
 
 onDelete={(id)=>{
 
+
 onDelete(id);
 
+
 setSelectedReservation(null);
+
 
 }}
 
 
 />
+
 
 
 )
@@ -691,8 +850,10 @@ setSelectedReservation(null);
 
 
 
+
 </>
 
 );
+
 
 }

@@ -9,28 +9,19 @@ import AdminCalendar from "@/components/admin/AdminCalendar";
 
 
 type Reservation = {
-
-  id:number;
-
-  name:string;
-
-  phone:string;
-
-  email:string;
-
-  date:string;
-
-  time:string;
-
-  guests:string;
-
-  status:string;
-
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: string;
+  status: string;
 };
 
 
 
-export default function CalendarPage(){
+export default function CalendarPage() {
 
 
   const [
@@ -47,60 +38,179 @@ export default function CalendarPage(){
 
 
 
-  
+
+
+  useEffect(() => {
+
+
+    const controller =
+      new AbortController();
+
+
+
+    async function fetchReservations(){
+
+
+      try {
+
+
+        const response =
+          await fetch(
+            "/api/admin/reservations",
+            {
+              signal:
+                controller.signal,
+            }
+          );
+
+
+
+        const data =
+          await response.json();
 
 
 
 
+        if(
+          Array.isArray(data)
+        ){
 
-useEffect(() => {
+          setReservations(data);
 
-  async function fetchReservations() {
+        } else {
 
-    try {
+          setReservations([]);
 
-      const response = await fetch(
-        "/api/admin/reservations"
-      );
-
-
-      const data = await response.json();
+        }
 
 
-      if(Array.isArray(data)) {
 
-        setReservations(data);
+      } catch(error){
 
-      } else {
+
+        if(
+          error instanceof DOMException &&
+          error.name === "AbortError"
+        ){
+          return;
+        }
+
+
+        console.error(
+          "Loading reservations error:",
+          error
+        );
+
 
         setReservations([]);
+
+
+
+      } finally {
+
+
+        setLoading(false);
+
 
       }
 
 
-    } catch(error) {
+    }
+
+
+
+    fetchReservations();
+
+
+
+    return () => {
+
+      controller.abort();
+
+    };
+
+
+
+  }, []);
+
+
+
+
+
+
+
+
+
+  async function updateReservation(
+    id:number,
+    status:string
+  ){
+
+
+
+    // мгновенное обновление UI
+
+    setReservations(prev =>
+
+      prev.map(item =>
+
+        item.id === id
+
+          ? {
+              ...item,
+              status,
+            }
+
+          : item
+
+      )
+
+    );
+
+
+
+
+
+    try {
+
+
+      await fetch(
+        `/api/admin/reservations/${id}`,
+        {
+
+          method:"PATCH",
+
+          headers:{
+            "Content-Type":"application/json",
+          },
+
+
+          body:JSON.stringify({
+            status,
+          }),
+
+
+        }
+      );
+
+
+
+    } catch(error){
+
 
       console.error(
-        "Loading reservations error:",
+        "Update reservation error:",
         error
       );
 
-      setReservations([]);
-
-
-    } finally {
-
-      setLoading(false);
 
     }
+
+
 
   }
 
 
-  fetchReservations();
-
-
-},[]);
 
 
 
@@ -108,69 +218,57 @@ useEffect(() => {
 
 
 
- async function updateReservation(
-  id:number,
-  status:string
-){
+  async function deleteReservation(
+    id:number
+  ){
 
 
-setReservations(prev =>
-  prev.map(item =>
-    item.id === id
-      ? {
-          ...item,
-          status
+
+    // сразу убрать из интерфейса
+
+    setReservations(prev =>
+
+      prev.filter(item =>
+
+        item.id !== id
+
+      )
+
+    );
+
+
+
+
+
+    try {
+
+
+      await fetch(
+        `/api/admin/reservations/${id}`,
+        {
+          method:"DELETE",
         }
-      : item
-  )
-);
+      );
 
 
 
-await fetch(
-`/api/admin/reservations/${id}`,
-{
-method:"PATCH",
+    } catch(error){
 
-headers:{
-"Content-Type":"application/json"
-},
 
-body:JSON.stringify({
-status
-})
+      console.error(
+        "Delete reservation error:",
+        error
+      );
 
-}
-);
+
+    }
 
 
 
-}
+  }
 
 
 
-
-
-async function deleteReservation(id:number){
-
-
-setReservations(prev =>
-  prev.filter(item =>
-    item.id !== id
-  )
-);
-
-
-
-await fetch(
-`/api/admin/reservations/${id}`,
-{
-method:"DELETE"
-}
-);
-
-
-}
 
 
 
@@ -181,7 +279,17 @@ method:"DELETE"
 
     return (
 
-      <div className="text-neutral-400">
+      <div
+        className="
+        min-h-75
+        flex
+        items-center
+        justify-center
+        text-neutral-400
+        text-sm
+        sm:text-base
+        "
+      >
 
         Loading calendar...
 
@@ -198,65 +306,102 @@ method:"DELETE"
 
 
 
+
   return (
 
-    <div>
+    <main
+      className="
+      w-full
+      "
+    >
 
 
-      <h1
+
+      <section
         className="
-        text-4xl
-        font-bold
-        mb-2
+        mb-8
         "
       >
 
-        Calendar
 
-      </h1>
+        <h1
+          className="
+          text-3xl
+          sm:text-4xl
+          font-bold
+          leading-tight
+          "
+        >
+
+          Calendar
+
+        </h1>
 
 
 
-      <p
+        <p
+          className="
+          text-neutral-500
+          mt-2
+          text-sm
+          sm:text-base
+          "
+        >
+
+          Reservation schedule
+
+        </p>
+
+
+      </section>
+
+
+
+
+
+
+
+
+
+      <div
         className="
-        text-neutral-500
-        mb-10
+        w-full
         "
       >
 
-        Reservation schedule
 
-      </p>
-
+        <AdminCalendar
 
 
-
-
-      <AdminCalendar
-
-
-        reservations={
-          reservations
-        }
-
-
-        onUpdate={
-          updateReservation
-        }
-
-
-        onDelete={
-          deleteReservation
-        }
-
-
-      />
+          reservations={
+            reservations
+          }
 
 
 
-    </div>
+          onUpdate={
+            updateReservation
+          }
+
+
+
+          onDelete={
+            deleteReservation
+          }
+
+
+        />
+
+
+      </div>
+
+
+
+
+
+
+    </main>
 
   );
-
 
 }

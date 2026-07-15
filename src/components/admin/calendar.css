@@ -1,46 +1,46 @@
 .rdp {
-  --rdp-cell-size: 48px;
-  margin: 0;
-}
-
-.rdp-month {
-  width: 100%;
+  --rdp-cell-size: 36px;
+  margin: 0 auto;
 }
 
 .rdp-month_caption {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .rdp-day_button {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  transition: 0.2s;
-}
-
-.rdp-day_button:hover {
-  background: #262626;
-}
-
-.rdp-selected .rdp-day_button {
-  background: #eab308;
-  color: black;
-  font-weight: 700;
-}
-
-.rdp-today .rdp-day_button {
-  border: 1px solid #eab308;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
 }
 
 .rdp-weekday {
+  font-size: 11px;
   color: #737373;
-  font-size: 12px;
 }
-.reservation-day {
-  background: rgba(234, 179, 8, 0.15);
-  color: #facc15;
-  border-radius: 14px;
-  font-weight: 700;
+
+/* tablet + desktop */
+
+@media (min-width: 640px) {
+  .rdp {
+    --rdp-cell-size: 42px;
+  }
+
+  .rdp-month_caption {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .rdp-day_button {
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 14px;
+  }
+
+  .rdp-weekday {
+    font-size: 12px;
+  }
 }

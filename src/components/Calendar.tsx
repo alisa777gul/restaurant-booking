@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { DayPicker } from "react-day-picker";
-import { useState } from "react";
 import "react-day-picker/style.css";
 
 
@@ -21,25 +19,62 @@ export default function Calendar({
   const today = new Date();
 
 
+
   return (
 
-    <div className="rounded-2xl bg-neutral-900 border border-neutral-700 p-5">
+
+    <div
+
+      className="
+      w-full
+
+      rounded-2xl
+
+      bg-neutral-900
+
+      border
+      border-neutral-800
+
+      p-3
+      sm:p-5
+
+      overflow-hidden
+
+      "
+
+    >
+
+
 
       <DayPicker
 
+
         mode="single"
+
 
         selected={value}
 
+
         onSelect={onChange}
+
 
         disabled={{
           before: today,
         }}
 
+
+
+        className="
+        mx-auto
+        "
+
       />
+
+
 
     </div>
 
+
   );
+
 }

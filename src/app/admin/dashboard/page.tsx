@@ -1,60 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import StatCard from "@/components/admin/StatCard";
 
 
+
 type Reservation = {
-  id: number;
-  name: string;
-  time: string;
-  guests: string;
-  status: string;
+  id:number;
+  name:string;
+  time:string;
+  guests:string;
+  status:string;
 };
+
 
 
 type Stats = {
-  total: number;
-  pending: number;
-  confirmed: number;
-  today: number;
+  total:number;
+  pending:number;
+  confirmed:number;
+  today:number;
 };
 
 
 
-export default function DashboardPage() {
 
 
-  const [stats, setStats] = useState<Stats>({
-    total: 0,
-    pending: 0,
-    confirmed: 0,
-    today: 0,
+export default function DashboardPage(){
+
+
+
+  const [
+    stats,
+    setStats
+  ] = useState<Stats>({
+    total:0,
+    pending:0,
+    confirmed:0,
+    today:0,
   });
 
 
 
-  const [reservations, setReservations] =
-    useState<Reservation[]>([]);
+
+  const [
+    reservations,
+    setReservations
+  ] = useState<Reservation[]>([]);
 
 
 
-  const [loading, setLoading] =
-    useState(true);
+
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
 
 
-  useEffect(() => {
 
 
-    const loadDashboard = async () => {
 
 
-      try {
+
+  useEffect(()=>{
+
+
+    const controller =
+      new AbortController();
+
+
+
+
+    async function loadDashboard(){
+
+
+      try{
 
 
         const response =
-          await fetch("/api/admin/dashboard");
+          await fetch(
+            "/api/admin/dashboard",
+            {
+              signal:
+                controller.signal,
+            }
+          );
+
 
 
         const data =
@@ -62,13 +98,17 @@ export default function DashboardPage() {
 
 
 
-        if (!response.ok) {
+
+        if(!response.ok){
 
           throw new Error(
-            data.error || "Failed to load dashboard"
+            data.error ||
+            "Failed to load dashboard"
           );
 
         }
+
+
 
 
 
@@ -83,13 +123,23 @@ export default function DashboardPage() {
 
 
 
+
         setReservations(
           data.todayReservations ?? []
         );
 
 
 
-      } catch(error) {
+      }
+      catch(error){
+
+
+        if(
+          error instanceof DOMException &&
+          error.name === "AbortError"
+        ){
+          return;
+        }
 
 
         console.error(
@@ -98,7 +148,8 @@ export default function DashboardPage() {
         );
 
 
-      } finally {
+      }
+      finally{
 
 
         setLoading(false);
@@ -107,7 +158,9 @@ export default function DashboardPage() {
       }
 
 
-    };
+    }
+
+
 
 
 
@@ -115,21 +168,39 @@ export default function DashboardPage() {
 
 
 
-  }, []);
+
+    return ()=>{
+
+      controller.abort();
+
+    };
+
+
+  },[]);
 
 
 
 
 
-  if (loading) {
+
+
+
+
+  if(loading){
 
 
     return (
 
       <div
-      className="
-      text-neutral-400
-      "
+        className="
+        min-h-75
+        flex
+        items-center
+        justify-center
+        text-neutral-400
+        text-sm
+        sm:text-base
+        "
       >
 
         Loading dashboard...
@@ -146,44 +217,80 @@ export default function DashboardPage() {
 
 
 
+
+
+
   return (
 
-    <div>
 
-
-      <h1
+    <main
       className="
-      text-4xl
-      font-bold
+      w-full
       "
+    >
+
+
+
+
+
+      <section
+        className="
+        mb-8
+        "
       >
-        Dashboard
-      </h1>
+
+
+        <h1
+          className="
+          text-3xl
+          sm:text-4xl
+          font-bold
+          "
+        >
+
+          Dashboard
+
+        </h1>
 
 
 
-      <p
-      className="
-      text-neutral-500
-      mt-2
-      "
-      >
-        Restaurant overview
-      </p>
+        <p
+          className="
+          text-neutral-500
+          mt-2
+          text-sm
+          sm:text-base
+          "
+        >
+
+          Restaurant overview
+
+        </p>
+
+
+      </section>
 
 
 
+
+
+
+
+
+
+      {/* STATS */}
 
 
 
       <div
-      className="
-      grid
-      grid-cols-1
-      md:grid-cols-4
-      gap-6
-      mt-10
-      "
+        className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        xl:grid-cols-4
+        gap-4
+        sm:gap-6
+        "
       >
 
 
@@ -193,16 +300,19 @@ export default function DashboardPage() {
         />
 
 
+
         <StatCard
           title="All reservations"
           value={stats.total}
         />
 
 
+
         <StatCard
           title="Pending"
           value={stats.pending}
         />
+
 
 
         <StatCard
@@ -219,28 +329,42 @@ export default function DashboardPage() {
 
 
 
-      <div
-      className="
-      mt-12
-      bg-[#111]
-      border
-      border-neutral-800
-      rounded-2xl
-      p-6
-      "
+
+
+      {/* TODAY RESERVATIONS */}
+
+
+
+
+      <section
+        className="
+        mt-8
+        sm:mt-12
+        bg-[#111]
+        border
+        border-neutral-800
+        rounded-2xl
+        p-4
+        sm:p-6
+        "
       >
 
 
 
         <h2
-        className="
-        text-2xl
-        font-bold
-        mb-6
-        "
+          className="
+          text-xl
+          sm:text-2xl
+          font-bold
+          mb-5
+          "
         >
+
           Today&apos;s reservations
+
         </h2>
+
+
 
 
 
@@ -250,25 +374,31 @@ export default function DashboardPage() {
           reservations.length === 0 ? (
 
 
-            <p
-            className="
-            text-neutral-500
-            "
+            <div
+              className="
+              py-10
+              text-center
+              text-neutral-500
+              "
             >
+
               No reservations today
-            </p>
+
+            </div>
 
 
-
-          ) : (
+          )
+          :
+          (
 
 
 
             <div
-            className="
-            space-y-4
-            "
+              className="
+              space-y-3
+              "
             >
+
 
 
               {
@@ -276,19 +406,23 @@ export default function DashboardPage() {
 
 
                   <div
+                    key={item.id}
 
-                  key={item.id}
-
-                  className="
-                  flex
-                  justify-between
-                  items-center
-                  bg-neutral-900
-                  rounded-xl
-                  p-4
-                  "
-
+                    className="
+                    flex
+                    flex-col
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    gap-4
+                    bg-neutral-900
+                    border
+                    border-neutral-800
+                    rounded-xl
+                    p-4
+                    "
                   >
+
 
 
 
@@ -296,54 +430,112 @@ export default function DashboardPage() {
 
 
                       <p
-                      className="
-                      font-semibold
-                      "
+                        className="
+                        font-semibold
+                        text-base
+                        "
                       >
+
                         {item.name}
+
                       </p>
 
 
+
+
                       <p
-                      className="
-                      text-neutral-400
-                      "
+                        className="
+                        text-neutral-400
+                        text-sm
+                        mt-1
+                        "
                       >
-                        {item.time}
+
+                        🕒 {item.time}
+
                       </p>
 
 
                     </div>
+
+
+
 
 
 
 
 
                     <div
-                    className="
-                    text-right
-                    "
+                      className="
+                      flex
+                      items-center
+                      justify-between
+                      sm:flex-col
+                      sm:items-end
+                      gap-2
+                      "
                     >
-
-
-                      <p>
-                        {item.guests} guests
-                      </p>
 
 
 
                       <p
-                      className="
-                      text-yellow-500
-                      text-sm
-                      "
+                        className="
+                        text-sm
+                        text-neutral-300
+                        "
                       >
-                        {item.status}
+
+                        {item.guests} guests
+
                       </p>
 
 
 
+
+
+                      <span
+                        className={`
+
+                        px-3
+                        py-1
+                        rounded-full
+                        text-xs
+                        font-semibold
+
+
+                        ${
+                          item.status==="CONFIRMED"
+
+                          ?
+
+                          "bg-green-500/10 text-green-400"
+
+                          :
+
+                          item.status==="CANCELLED"
+
+                          ?
+
+                          "bg-red-500/10 text-red-400"
+
+                          :
+
+                          "bg-yellow-500/10 text-yellow-400"
+
+                        }
+
+                        `}
+                      >
+
+                        {item.status}
+
+                      </span>
+
+
+
                     </div>
+
+
 
 
 
@@ -354,8 +546,10 @@ export default function DashboardPage() {
               }
 
 
-            </div>
 
+
+
+            </div>
 
 
           )
@@ -365,14 +559,16 @@ export default function DashboardPage() {
 
 
 
-      </div>
+
+      </section>
 
 
 
 
-    </div>
+
+    </main>
+
 
   );
-
 
 }

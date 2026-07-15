@@ -1,65 +1,110 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 
-export default function LogoutButton(){
+export default function LogoutButton() {
 
+  const router = useRouter();
 
-const router = useRouter();
-
-
-
-async function logout(){
-
-
-await fetch(
-"/api/admin/logout",
-{
-method:"POST"
-}
-);
+  const [loading, setLoading] = useState(false);
 
 
 
-router.push(
-"/admin/login"
-);
+  async function logout() {
+
+    if (loading) return;
+
+
+    try {
+
+      setLoading(true);
+
+
+      const response = await fetch(
+        "/api/admin/logout",
+        {
+          method: "POST",
+        }
+      );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Logout failed"
+        );
+
+      }
 
 
 
-router.refresh();
+      router.replace(
+        "/admin/login"
+      );
 
 
-}
+      router.refresh();
 
 
 
-return (
+    } catch(error) {
 
-<button
+      console.error(
+        "Logout error:",
+        error
+      );
 
-onClick={logout}
 
-className="
-rounded-xl
-bg-red-600
-text-white
-px-5
-py-3
-font-semibold
-hover:bg-red-700
-transition
-"
+    } finally {
 
->
+      setLoading(false);
 
-Logout
+    }
 
-</button>
+  }
 
-);
 
+
+
+  return (
+
+    <button
+
+      onClick={logout}
+
+      disabled={loading}
+
+      className="
+        rounded-xl
+        bg-red-600
+        text-white
+
+        px-5
+        py-3
+
+        font-semibold
+
+        hover:bg-red-700
+
+        transition
+
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+      "
+
+    >
+
+      {
+        loading
+        ? "Logging out..."
+        : "Logout"
+      }
+
+
+    </button>
+
+  );
 
 }

@@ -1,16 +1,16 @@
 "use client";
 
-
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
   LayoutDashboard,
   CalendarDays,
-  Settings,
-  ChartColumn,
   BookOpen,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 
 
@@ -18,329 +18,531 @@ import {
 const links = [
 
   {
-    title: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
+    title:"Dashboard",
+    href:"/admin/dashboard",
+    icon:LayoutDashboard,
   },
 
   {
-    title: "Reservations",
-    href: "/admin/reservations",
-    icon: BookOpen,
+    title:"Reservations",
+    href:"/admin/reservations",
+    icon:BookOpen,
   },
 
   {
-    title: "Calendar",
-    href: "/admin/calendar",
-    icon: CalendarDays,
+    title:"Calendar",
+    href:"/admin/calendar",
+    icon:CalendarDays,
   },
 
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-
-  {
-    title: "Analytics",
-    href: "/admin/analytics",
-    icon: ChartColumn,
-  },
+ 
 
 ];
 
 
 
 
-export default function Sidebar() {
 
+export default function Sidebar(){
 
-  const pathname = usePathname();
 
-  const router = useRouter();
+const pathname = usePathname();
 
+const router = useRouter();
 
 
+const [open,setOpen] = useState(false);
 
-  async function logout(){
 
 
-    await fetch(
-      "/api/admin/logout",
-      {
-        method:"POST",
-      }
-    );
 
 
-    router.push(
-      "/admin/login"
-    );
+async function logout(){
 
 
-    router.refresh();
+await fetch(
+"/api/admin/logout",
+{
+method:"POST"
+}
+);
 
 
-  }
+router.replace(
+"/admin/login"
+);
 
 
+router.refresh();
 
 
+}
 
-  return (
 
 
-    <aside
-      className="
-      w-72
-      min-h-screen
-      bg-[#111]
-      border-r
-      border-neutral-800
-      flex
-      flex-col
-      "
-    >
 
 
 
+return (
 
-      {/* LOGO */}
+<>
 
 
-      <div
-        className="
-        p-8
-        border-b
-        border-neutral-800
-        "
-      >
+{/* MOBILE BUTTON */}
 
 
-        <h1
-          className="
-          text-2xl
-          font-bold
-          "
-        >
+<button
 
-          🍽 Restaurant
+onClick={()=>setOpen(true)}
 
-        </h1>
+className="
+lg:hidden
 
+fixed
 
+top-4
 
-        <p
-          className="
-          text-neutral-500
-          text-sm
-          mt-2
-          "
-        >
+left-4
 
-          Admin Panel
+z-50
 
-        </p>
+bg-neutral-900
 
+border
 
-      </div>
+border-neutral-800
 
+p-3
 
+rounded-xl
 
+"
 
+>
 
+<Menu size={22}/>
 
-      {/* MENU */}
+</button>
 
 
-      <nav
-        className="
-        flex-1
-        p-5
-        space-y-2
-        "
-      >
 
 
-        {
-          links.map((link)=>{
 
 
-            const Icon = link.icon;
 
 
-            const active =
-              pathname === link.href;
+{/* OVERLAY */}
 
 
+{
+open && (
 
-            return (
+<div
 
+onClick={()=>setOpen(false)}
 
-              <Link
+className="
+fixed
+inset-0
 
-                key={link.href}
+bg-black/60
 
-                href={link.href}
+z-40
 
+lg:hidden
 
-                className={`
-                
-                flex
-                items-center
-                gap-4
-                rounded-xl
-                px-5
-                py-4
-                transition
-                duration-200
-                
-                ${
-                  active
+"
 
-                  ?
+/>
 
-                  "bg-yellow-500 text-black font-semibold"
+)
 
-                  :
+}
 
-                  "text-neutral-300 hover:bg-neutral-800 hover:text-white"
 
-                }
 
-                `}
 
-              >
 
 
-                <Icon size={20}/>
 
 
-                <span>
+<aside
 
-                  {link.title}
 
-                </span>
+className={`
 
+fixed
 
-              </Link>
+lg:static
 
 
-            );
+top-0
 
+left-0
 
-          })
-        }
 
+z-50
 
 
-      </nav>
+h-screen
 
 
+w-72
 
 
+bg-[#111]
 
 
+border-r
 
+border-neutral-800
 
-      {/* USER / LOGOUT */}
 
+flex
 
-      <div
-        className="
-        p-5
-        border-t
-        border-neutral-800
-        "
-      >
+flex-col
 
 
 
-        <div
-          className="
-          mb-4
-          px-4
-          py-3
-          rounded-xl
-          bg-neutral-900
-          "
-        >
+transition-transform
 
+duration-300
 
-          <p
-            className="
-            text-sm
-            font-semibold
-            "
-          >
 
-            Admin
 
-          </p>
+${
 
+open
 
+?
 
-          <p
-            className="
-            text-xs
-            text-neutral-500
-            "
-          >
+"translate-x-0"
 
-            Restaurant manager
+:
 
-          </p>
+"-translate-x-full lg:translate-x-0"
 
+}
 
 
-        </div>
+`}
 
+>
 
 
 
 
 
-        <button
 
-          onClick={logout}
 
+{/* HEADER */}
 
-          className="
-          w-full
-          flex
-          items-center
-          gap-4
-          rounded-xl
-          px-5
-          py-4
-          text-red-400
-          hover:bg-red-500/10
-          transition
-          "
 
-        >
 
+<div
 
-          <LogOut size={20}/>
+className="
+p-6
 
+border-b
 
-          Logout
+border-neutral-800
 
+flex
 
-        </button>
+justify-between
 
+items-start
 
+"
 
+>
 
-      </div>
 
+<div>
 
+<h1
 
+className="
+text-2xl
+font-bold
+"
 
+>
 
-    </aside>
+🍽 Restaurant
 
+</h1>
 
-  );
+
+<p
+
+className="
+text-sm
+text-neutral-500
+mt-1
+"
+
+>
+
+Admin Panel
+
+</p>
+
+
+</div>
+
+
+
+
+
+<button
+
+onClick={()=>setOpen(false)}
+
+className="
+lg:hidden
+text-neutral-400
+"
+
+>
+
+<X size={24}/>
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* MENU */}
+
+
+
+<nav
+
+className="
+flex-1
+
+p-5
+
+space-y-2
+
+"
+
+>
+
+
+{
+links.map((link)=>{
+
+
+const Icon = link.icon;
+
+
+const active =
+pathname === link.href;
+
+
+
+return (
+
+<Link
+
+key={link.href}
+
+href={link.href}
+
+onClick={()=>setOpen(false)}
+
+
+className={`
+
+flex
+
+items-center
+
+gap-4
+
+
+rounded-xl
+
+
+px-5
+
+py-4
+
+
+transition
+
+
+
+${
+
+active
+
+?
+
+"bg-yellow-500 text-black font-semibold"
+
+:
+
+"text-neutral-300 hover:bg-neutral-800"
+
+}
+
+`}
+
+>
+
+
+<Icon size={20}/>
+
+
+<span>
+{link.title}
+</span>
+
+
+</Link>
+
+
+)
+
+
+})
+
+}
+
+
+</nav>
+
+
+
+
+
+
+
+
+
+{/* USER */}
+
+
+
+<div
+
+className="
+p-5
+
+border-t
+
+border-neutral-800
+
+"
+
+>
+
+
+<div
+
+className="
+mb-4
+
+px-4
+
+py-3
+
+rounded-xl
+
+bg-neutral-900
+
+"
+
+>
+
+<p className="font-semibold">
+Admin
+</p>
+
+
+<p className="text-xs text-neutral-500">
+Restaurant manager
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+onClick={logout}
+
+className="
+w-full
+
+flex
+
+items-center
+
+gap-4
+
+
+rounded-xl
+
+px-5
+
+py-4
+
+
+text-red-400
+
+
+hover:bg-red-500/10
+
+
+transition
+
+"
+
+>
+
+
+<LogOut size={20}/>
+
+Logout
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+</aside>
+
+
+
+</>
+
+);
 
 }
