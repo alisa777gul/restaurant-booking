@@ -67,3 +67,56 @@ export async function PATCH(
   }
 
 }
+export async function DELETE(
+  request: Request,
+  {
+    params,
+  }: {
+    params: Promise<{
+      id:string;
+    }>;
+  }
+) {
+
+  try {
+
+
+    const { id } = await params;
+
+
+
+    const reservation =
+      await prisma.reservation.delete({
+
+        where:{
+          id:Number(id),
+        },
+
+      });
+
+
+
+    return Response.json(
+      reservation
+    );
+
+
+  } catch(error) {
+
+
+    console.error(error);
+
+
+    return Response.json(
+      {
+        error:"Delete failed"
+      },
+      {
+        status:500
+      }
+    );
+
+
+  }
+
+}

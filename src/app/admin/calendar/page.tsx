@@ -1,163 +1,103 @@
 "use client";
 
-
 import {
-useEffect,
-useState
+  useEffect,
+  useState,
 } from "react";
 
-
-import AdminCalendar
-from "@/components/admin/AdminCalendar";
-
+import AdminCalendar from "@/components/admin/AdminCalendar";
 
 
 type Reservation = {
 
-id:number;
+  id:number;
 
-name:string;
+  name:string;
 
-phone:string;
+  phone:string;
 
-email:string;
+  email:string;
 
-date:string;
+  date:string;
 
-time:string;
+  time:string;
 
-guests:string;
+  guests:string;
 
-status:string;
+  status:string;
 
 };
-
-
-
 
 
 
 export default function CalendarPage(){
 
 
+  const [
+    reservations,
+    setReservations
+  ] = useState<Reservation[]>([]);
 
-const [
-reservations,
-setReservations
-]=
-useState<Reservation[]>([]);
 
 
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
-const [
-loading,
-setLoading
-]=
-useState(true);
 
 
+  
 
 
 
-async function loadReservations(){
 
 
-try{
+useEffect(() => {
 
+  async function fetchReservations() {
 
-const response =
-await fetch(
-"/api/admin/reservations"
-);
+    try {
 
+      const response = await fetch(
+        "/api/admin/reservations"
+      );
 
 
-const data =
-await response.json();
+      const data = await response.json();
 
 
+      if(Array.isArray(data)) {
 
-console.log(
-"API:",
-data
-);
+        setReservations(data);
 
+      } else {
 
+        setReservations([]);
 
-if(Array.isArray(data)){
+      }
 
 
-setReservations(data);
+    } catch(error) {
 
+      console.error(
+        "Loading reservations error:",
+        error
+      );
 
-}else{
+      setReservations([]);
 
 
-setReservations([]);
+    } finally {
 
+      setLoading(false);
 
-}
+    }
 
+  }
 
 
-}
-
-catch(error){
-
-
-console.error(error);
-
-
-setReservations([]);
-
-
-}
-
-finally{
-
-
-setLoading(false);
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-useEffect(()=>{
-
-
-let cancelled = false;
-
-
-async function init(){
-
-  await loadReservations();
-
-
-}
-
-
-if(!cancelled){
-
-  init();
-
-}
-
-
-
-return ()=>{
-
-  cancelled = true;
-
-};
-
+  fetchReservations();
 
 
 },[]);
@@ -168,165 +108,196 @@ return ()=>{
 
 
 
+  async function updateReservation(
+    id:number,
+    status:string
+  ){
 
-async function updateReservation(
-id:number,
-status:string
-){
 
+    try {
 
 
-await fetch(
-"/api/admin/reservations",
-{
+      await fetch(
+        `/api/admin/reservations/${id}`,
+        {
 
-method:"PATCH",
+          method:"PATCH",
 
-headers:{
-"Content-Type":"application/json"
-},
+          headers:{
+            "Content-Type":"application/json",
+          },
 
-body:JSON.stringify({
 
-id,
+          body:JSON.stringify({
 
-status
+            status,
 
-})
+          }),
 
+        }
+      );
 
-}
-);
 
+      
 
 
-loadReservations();
 
+    } catch(error){
 
-}
 
+      console.error(
+        "Update error:",
+        error
+      );
 
 
+    }
 
 
+  }
 
 
-async function deleteReservation(
-id:number
-){
 
 
-await fetch(
-`/api/admin/reservations?id=${id}`,
-{
 
-method:"DELETE"
 
-}
-);
 
 
+  async function deleteReservation(
+    id:number
+  ){
 
-loadReservations();
 
+    try {
 
-}
 
+      const response =
+        await fetch(
+          `/api/admin/reservations/${id}`,
+          {
 
+            method:"DELETE",
 
+          }
+        );
 
 
 
+      if(!response.ok){
 
+        throw new Error(
+          "Delete failed"
+        );
 
+      }
 
-if(loading){
 
 
-return (
+      
 
-<div
-className="
-text-neutral-400
-"
->
 
-Loading calendar...
 
-</div>
+    } catch(error){
 
 
-);
+      console.error(
+        "Delete error:",
+        error
+      );
 
 
-}
+    }
 
 
+  }
 
 
 
 
 
-return (
 
 
-<div>
+  if(loading){
 
 
-<h1
-className="
-text-4xl
-font-bold
-mb-2
-"
->
+    return (
 
-Calendar
+      <div className="text-neutral-400">
 
-</h1>
+        Loading calendar...
 
+      </div>
 
-<p
-className="
-text-neutral-500
-mb-10
-"
->
+    );
 
-Reservation schedule
 
-</p>
+  }
 
 
 
 
 
-<AdminCalendar
 
 
-reservations={
-reservations
-}
+  return (
 
+    <div>
 
-onUpdate={
-updateReservation
-}
 
+      <h1
+        className="
+        text-4xl
+        font-bold
+        mb-2
+        "
+      >
 
-onDelete={
-deleteReservation
-}
+        Calendar
 
+      </h1>
 
-/>
 
 
+      <p
+        className="
+        text-neutral-500
+        mb-10
+        "
+      >
 
-</div>
+        Reservation schedule
 
+      </p>
 
-);
+
+
+
+
+      <AdminCalendar
+
+
+        reservations={
+          reservations
+        }
+
+
+        onUpdate={
+          updateReservation
+        }
+
+
+        onDelete={
+          deleteReservation
+        }
+
+
+      />
+
+
+
+    </div>
+
+  );
 
 
 }
