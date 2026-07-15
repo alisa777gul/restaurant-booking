@@ -2,21 +2,81 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 
-export async function POST(request: Request) {
+export async function POST(
+ request:Request
+){
 
-  const { date, time } = await request.json();
-
-
-  const existing = await prisma.reservation.findFirst({
-    where: {
-      date,
-      time,
-    },
-  });
+try{
 
 
-  return NextResponse.json({
-    available: !existing,
-  });
+const {
+ date,
+ time
+}=await request.json();
+
+
+
+const slot =
+await prisma.timeSlot.findFirst({
+
+where:{
+ date,
+ time
+}
+
+});
+
+
+
+if(!slot){
+
+return NextResponse.json({
+
+available:false
+
+});
+
+}
+
+
+
+const reservation =
+await prisma.reservation.findFirst({
+
+where:{
+ date,
+ time
+}
+
+});
+
+
+
+return NextResponse.json({
+
+available:!reservation
+
+});
+
+
+
+}catch(error){
+
+
+console.error(error);
+
+
+return NextResponse.json(
+{
+error:"Server error"
+},
+{
+status:500
+}
+);
+
+
+}
+
 
 }

@@ -108,110 +108,69 @@ useEffect(() => {
 
 
 
-  async function updateReservation(
-    id:number,
-    status:string
-  ){
+ async function updateReservation(
+  id:number,
+  status:string
+){
 
 
-    try {
-
-
-      await fetch(
-        `/api/admin/reservations/${id}`,
-        {
-
-          method:"PATCH",
-
-          headers:{
-            "Content-Type":"application/json",
-          },
-
-
-          body:JSON.stringify({
-
-            status,
-
-          }),
-
+setReservations(prev =>
+  prev.map(item =>
+    item.id === id
+      ? {
+          ...item,
+          status
         }
-      );
-
-
-      
-
-
-
-    } catch(error){
-
-
-      console.error(
-        "Update error:",
-        error
-      );
-
-
-    }
-
-
-  }
+      : item
+  )
+);
 
 
 
+await fetch(
+`/api/admin/reservations/${id}`,
+{
+method:"PATCH",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+status
+})
+
+}
+);
+
+
+
+}
 
 
 
 
 
-  async function deleteReservation(
-    id:number
-  ){
+async function deleteReservation(id:number){
 
 
-    try {
-
-
-      const response =
-        await fetch(
-          `/api/admin/reservations/${id}`,
-          {
-
-            method:"DELETE",
-
-          }
-        );
+setReservations(prev =>
+  prev.filter(item =>
+    item.id !== id
+  )
+);
 
 
 
-      if(!response.ok){
-
-        throw new Error(
-          "Delete failed"
-        );
-
-      }
-
+await fetch(
+`/api/admin/reservations/${id}`,
+{
+method:"DELETE"
+}
+);
 
 
-      
-
-
-
-    } catch(error){
-
-
-      console.error(
-        "Delete error:",
-        error
-      );
-
-
-    }
-
-
-  }
-
-
+}
 
 
 

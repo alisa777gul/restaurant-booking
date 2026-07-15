@@ -1,8 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
+import "./calendar.css";
+import TimeSlots from "@/components/admin/TimeSlots";
+import {
+  CalendarDays,
+  Clock,
+  Users,
+  Phone,
+  Mail,
+} from "lucide-react";
 
 import ReservationModal from "@/components/admin/ReservationModal";
 
@@ -17,7 +27,6 @@ type Reservation = {
   guests:string;
   status:string;
 };
-
 
 
 type Props = {
@@ -35,8 +44,6 @@ type Props = {
 
 
 
-
-
 function formatDate(date:Date){
 
   return (
@@ -49,54 +56,21 @@ function formatDate(date:Date){
 
 
 
-
-
 function normalizeDate(value:string){
 
-  if(!value) return "";
+  if(!value)
+    return "";
 
-  
-  // 2026-07-15
-  if(value.includes("-")){
-
-    return value.split("T")[0];
-
-  }
-
-
-
-  // 15.07.2026
-
-  if(value.includes(".")){
-
-
-    const [
-      day,
-      month,
-      year
-    ] = value.split(".");
-
-
-    return `${year}-${month}-${day}`;
-
-
-  }
-
-
-
-  return "";
+  return value.split("T")[0];
 
 }
 
 
 
 
-
-
-
 export default function AdminCalendar({
 
-  reservations,
+  reservations = [],
 
   onUpdate,
 
@@ -107,22 +81,18 @@ export default function AdminCalendar({
 
 
 const [selectedDate,setSelectedDate] =
-useState<Date>(
-  new Date()
-);
+useState<Date>(new Date());
 
 
 
-const [selectedReservation,setSelectedReservation]
-=
+const [selectedReservation,setSelectedReservation] =
 useState<Reservation | null>(null);
 
 
 
 
 
-
-const selectedFormatted =
+const selectedDay =
 formatDate(selectedDate);
 
 
@@ -130,17 +100,55 @@ formatDate(selectedDate);
 
 
 const dayReservations =
-reservations.filter((item)=>{
+useMemo(()=>{
 
 
-return (
+return reservations
+
+.filter(item=>
+
 normalizeDate(item.date)
 ===
-selectedFormatted
+selectedDay
+
+)
+
+.sort((a,b)=>
+
+a.time.localeCompare(
+b.time
+)
+
 );
 
 
-});
+},[
+reservations,
+selectedDay
+]);
+
+
+
+
+
+const bookedDays =
+useMemo(()=>{
+
+
+return reservations
+
+.filter(item=>item.date)
+
+.map(item=>
+
+new Date(
+normalizeDate(item.date)
+)
+
+);
+
+
+},[reservations]);
 
 
 
@@ -150,16 +158,20 @@ selectedFormatted
 
 return (
 
+<>
 
 <div
 className="
 grid
-md:grid-cols-2
+xl:grid-cols-[420px_1fr]
 gap-8
+items-start
 "
 >
 
 
+
+{/* CALENDAR */}
 
 
 <div
@@ -167,44 +179,91 @@ className="
 bg-[#111]
 border
 border-neutral-800
-rounded-2xl
-p-6
+rounded-3xl
+p-7
+shadow-xl
 "
 >
 
 
-<h2
+<div
 className="
+flex
+items-center
+gap-4
+mb-7
+"
+>
+
+
+<div
+className="
+p-3
+rounded-xl
+bg-yellow-500/10
+text-yellow-400
+"
+>
+
+<CalendarDays size={25}/>
+
+</div>
+
+
+<div>
+
+<h2 className="
 text-xl
 font-bold
-mb-5
-"
->
-Choose date
+">
+
+Calendar
+
 </h2>
+
+
+<p className="
+text-neutral-500
+text-sm
+">
+
+Reservation dates
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
 
 
 <DayPicker
 
-
 mode="single"
-
 
 selected={selectedDate}
 
-
 onSelect={(date)=>{
 
-if(date){
-
+if(date)
 setSelectedDate(date);
-
-}
 
 }}
 
+modifiers={{
+booked:bookedDays
+}}
+
+modifiersClassNames={{
+booked:"booked-day"
+}}
 
 />
+
 
 
 </div>
@@ -217,23 +276,33 @@ setSelectedDate(date);
 
 
 
+{/* RESERVATIONS */}
+
+
 <div
 className="
 bg-[#111]
 border
 border-neutral-800
-rounded-2xl
-p-6
+rounded-3xl
+p-7
+min-h-[560px]
 "
 >
 
 
 
-<h2
+<div
 className="
-text-2xl
+mb-8
+"
+>
+
+
+<h1
+className="
+text-3xl
 font-bold
-mb-6
 "
 >
 
@@ -241,6 +310,7 @@ mb-6
 selectedDate.toLocaleDateString(
 "en-US",
 {
+weekday:"long",
 day:"numeric",
 month:"long",
 year:"numeric"
@@ -248,7 +318,25 @@ year:"numeric"
 )
 }
 
-</h2>
+</h1>
+
+
+<p
+className="
+text-neutral-500
+mt-2
+"
+>
+
+{dayReservations.length} reservations
+
+</p>
+
+<TimeSlots
+ date={selectedDay}
+/>
+</div>
+
 
 
 
@@ -259,18 +347,43 @@ year:"numeric"
 dayReservations.length === 0 ? (
 
 
-<p
+<div
 className="
+h-[320px]
+flex
+flex-col
+items-center
+justify-center
 text-neutral-500
 "
 >
+
+
+<CalendarDays
+size={45}
+/>
+
+
+<p
+className="
+mt-4
+"
+>
+
 No reservations
+
 </p>
 
 
+</div>
 
-):(
 
+
+)
+
+:
+
+(
 
 
 <div
@@ -281,8 +394,7 @@ space-y-4
 
 
 {
-dayReservations.map((item)=>(
-
+dayReservations.map(item=>(
 
 
 <button
@@ -300,41 +412,93 @@ setSelectedReservation(item);
 
 className="
 w-full
+text-left
 bg-neutral-900
-rounded-xl
-p-4
 border
-border-transparent
+border-neutral-800
+rounded-2xl
+p-5
 hover:border-yellow-500
 transition
+"
+
+>
+
+
+<div
+className="
 flex
 justify-between
-items-center
-text-left
+items-start
+gap-5
 "
-
 >
 
 
-<div>
-
-
-<p
+<div
 className="
-font-semibold
+flex-1
 "
 >
+
+
+<h3
+className="
+font-bold
+text-lg
+"
+>
+
 {item.name}
-</p>
+
+</h3>
 
 
-<p
+
+
+<div
 className="
+flex
+items-center
+gap-6
+mt-3
+text-sm
 text-neutral-400
 "
 >
+
+
+<span
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<Clock size={15}/>
+
 {item.time}
-</p>
+
+</span>
+
+
+<span
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<Users size={15}/>
+
+{item.guests}
+
+</span>
+
+
+</div>
 
 
 </div>
@@ -343,27 +507,26 @@ text-neutral-400
 
 
 
-<div
-className="
-text-right
-"
->
-
-
-<p>
-{item.guests} guests
-</p>
-
 
 
 <span
-className={
 
+className={`
+inline-flex
+justify-center
+min-w-[95px]
+px-3
+py-1.5
+rounded-full
+text-xs
+font-semibold
+
+${
 item.status==="CONFIRMED"
 
 ?
 
-"text-green-400 text-sm"
+"bg-green-500/10 text-green-400"
 
 :
 
@@ -371,13 +534,15 @@ item.status==="CANCELLED"
 
 ?
 
-"text-red-400 text-sm"
+"bg-red-500/10 text-red-400"
 
 :
 
-"text-yellow-400 text-sm"
+"bg-yellow-500/10 text-yellow-400"
 
 }
+
+`}
 
 >
 
@@ -386,15 +551,70 @@ item.status==="CANCELLED"
 </span>
 
 
+
 </div>
+
+
+
+
+
+
+
+<div
+className="
+flex
+items-center
+gap-6
+mt-5
+text-xs
+text-neutral-500
+"
+>
+
+
+<span
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<Phone size={13}/>
+
+{item.phone}
+
+</span>
+
+
+
+
+<span
+className="
+flex
+items-center
+gap-2
+"
+>
+
+<Mail size={13}/>
+
+{item.email}
+
+</span>
+
+
+
+</div>
+
+
+
 
 
 </button>
 
 
-
 ))
-
 
 }
 
@@ -404,8 +624,14 @@ item.status==="CANCELLED"
 
 )
 
-
 }
+
+
+
+</div>
+
+
+
 
 
 
@@ -423,7 +649,6 @@ selectedReservation && (
 
 <ReservationModal
 
-
 reservation={selectedReservation}
 
 
@@ -437,15 +662,12 @@ setSelectedReservation(null);
 
 onUpdate={(id,status)=>{
 
-
 onUpdate(
 id,
 status
 );
 
-
 setSelectedReservation(null);
-
 
 }}
 
@@ -453,12 +675,9 @@ setSelectedReservation(null);
 
 onDelete={(id)=>{
 
-
 onDelete(id);
 
-
 setSelectedReservation(null);
-
 
 }}
 
@@ -467,12 +686,12 @@ setSelectedReservation(null);
 
 
 )
+
 }
 
 
 
-</div>
-
+</>
 
 );
 

@@ -24,13 +24,7 @@ const [times, setTimes] = useState<string[]>([]);
 
 
   
-const loadTimes = async () => {
-  const response = await fetch("/api/settings/times");
 
-  const data = await response.json();
-
-  setTimes(data.map((item: { time: string }) => item.time));
-};
 
   const formatDate = (date: Date) => {
 
@@ -49,77 +43,86 @@ const loadTimes = async () => {
 
 
 
-  const handleDateChange = async (
-    date: Date | undefined
-  ) => {
+ const handleDateChange = async (
+  date: Date | undefined
+) => {
 
+  setSelectedDate(date);
 
-    setSelectedDate(date);
+  setTime("");
 
-    setTime("");
+  setError("");
 
-    setError("");
+  setSuccess(false);
 
-    setSuccess(false);
+  if (!date) {
 
+    setReservedTimes([]);
+    setTimes([]);
 
-    if (!date) {
+    return;
 
-      setReservedTimes([]);
+  }
 
-      return;
+  const formattedDate = formatDate(date);
 
-    }
+  try {
 
+    // занятые часы
 
-
-    try {
-
-
-      const response = await fetch(
+    const reservedResponse =
+      await fetch(
         "/api/reservations/available",
         {
-
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
-
           body: JSON.stringify({
-
-            date: formatDate(date),
-
+            date: formattedDate,
           }),
-
         }
       );
 
+    const reservedData =
+      await reservedResponse.json();
+
+    setReservedTimes(
+      reservedData.reservedTimes || []
+    );
 
 
-      const data = await response.json();
 
+    // доступные часы именно этой даты
 
-
-      setReservedTimes(
-        data.reservedTimes || []
+    const slotResponse =
+      await fetch(
+        `/api/admin/times?date=${formattedDate}`
       );
 
+    const slotData =
+      await slotResponse.json();
 
-    } catch {
+    setTimes(
+      slotData.map(
+        (item:{time:string}) => item.time
+      )
+    );
 
+  }
 
-      setError(
-        "Could not load available times"
-      );
+  catch {
 
+    setReservedTimes([]);
+    setTimes([]);
 
-    }
+    setError(
+      "Could not load available times"
+    );
 
+  }
 
-  };
-
+};
 
 
 
@@ -332,27 +335,7 @@ const loadTimes = async () => {
 
 
 
-useEffect(() => {
-  let ignore = false;
-
-  const fetchTimes = async () => {
-    const response = await fetch("/api/settings/times");
-
-    const data = await response.json();
-
-    if (!ignore) {
-      setTimes(
-        data.map((item: { time: string }) => item.time)
-      );
-    }
-  };
-
-  fetchTimes();
-
-  return () => {
-    ignore = true;
-  };
-}, []);
+ 
 
 
   return (

@@ -50,3 +50,15 @@ model BlockedDate {
 
   reason String?
 }
+
+model TimeSlot {
+
+  id Int @id @default(autoincrement())
+
+  date String
+
+  time String
+
+  createdAt DateTime @default(now())
+
+}
