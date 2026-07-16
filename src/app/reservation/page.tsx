@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Calendar from '@/components/Calendar';
+import Header from '@/components/home/Header';
+import Footer from '@/components/Footer';
 
 type Service = {
   id: number;
@@ -229,10 +231,12 @@ py-12
 sm:py-20
 "
     >
+      <Header />
       <section
         className="
 max-w-3xl
 mx-auto
+my-10
 "
       >
         <div
@@ -684,6 +688,7 @@ disabled:opacity-50
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

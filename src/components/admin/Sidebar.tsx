@@ -110,7 +110,9 @@ dark:border-neutral-800
 "
         >
           <div>
-            <h1 className="text-2xl font-bold">BookFlow</h1>
+            <h2 className="text-2xl font-bold">
+              Book<span className="text-blue-600">Flow</span>
+            </h2>
 
             <p className="text-sm text-neutral-500">Booking platform</p>
           </div>

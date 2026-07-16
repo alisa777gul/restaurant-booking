@@ -1,88 +1,106 @@
 'use client';
 
+import Link from 'next/link';
 import { Menu } from 'lucide-react';
 
 import ThemeToggle from '@/components/ThemeToggle';
 
-export default function Topbar({ setOpen }: { setOpen: (value: boolean) => void }) {
+type TopbarProps = {
+  setOpen: (value: boolean) => void;
+};
+
+export default function Topbar({ setOpen }: TopbarProps) {
   return (
     <header
       className="
-      sticky
-      top-0
-      z-30
+        sticky
+        top-0
+        z-30
 
-      h-16
-      sm:h-20
+        flex
+        h-16
+        items-center
+        justify-between
 
-      flex
-      items-center
-      justify-between
+        border-b
+        border-neutral-200
 
-      px-4
-      sm:px-6
-      lg:px-10
+        bg-white/80
+        px-4
 
-      border-b
-      border-neutral-200
-      dark:border-neutral-800
+        backdrop-blur-xl
 
-      bg-white/80
-      dark:bg-neutral-950/80
+        dark:border-neutral-800
+        dark:bg-neutral-950/80
 
-      backdrop-blur-xl
+        sm:h-20
+        sm:px-6
+
+        lg:px-10
       "
     >
       <div className="flex items-center gap-4">
+        {/* MOBILE MENU */}
+
         <button
+          type="button"
           onClick={() => setOpen(true)}
           className="
-          lg:hidden
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
 
-          w-10
-          h-10
+            rounded-xl
 
-          flex
-          items-center
-          justify-center
+            border
+            border-neutral-200
 
-          rounded-xl
+            bg-white
 
-          bg-white
-          dark:bg-neutral-900
+            shadow-sm
 
-          border
-          border-neutral-200
-          dark:border-neutral-800
+            transition
 
-          shadow-sm
+            hover:bg-neutral-100
+
+            dark:border-neutral-800
+            dark:bg-neutral-900
+            dark:hover:bg-neutral-800
+
+            lg:hidden
           "
+          aria-label="Open menu"
         >
           <Menu size={22} />
         </button>
 
+        {/* BRAND */}
+
         <div>
-          <h1
+          <Link
+            href="/"
             className="
-            text-lg
-            sm:text-2xl
+              text-xl
+              font-bold
+              tracking-tight
 
-            font-bold
-
-            text-neutral-900
-            dark:text-white
+              sm:text-2xl
             "
           >
-            BookFlow
-          </h1>
+            Book
+            <span className="text-blue-600">Flow</span>
+          </Link>
 
           <p
             className="
-            hidden
-            sm:block
+              hidden
 
-            text-sm
-            text-neutral-500
+              text-sm
+              text-neutral-500
+
+              sm:block
             "
           >
             Booking management platform
@@ -90,29 +108,38 @@ export default function Topbar({ setOpen }: { setOpen: (value: boolean) => void 
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* RIGHT SIDE */}
+
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+        "
+      >
         <ThemeToggle />
 
         <div
           className="
-          w-9
-          h-9
+            flex
 
-          sm:w-10
-          sm:h-10
+            h-9
+            w-9
 
-          rounded-2xl
+            items-center
+            justify-center
 
-          bg-linear-to-br
-          from-blue-500
-          to-indigo-600
+            rounded-2xl
 
-          flex
-          items-center
-          justify-center
+            bg-gradient-to-br
+            from-blue-500
+            to-indigo-600
 
-          text-white
-          font-bold
+            font-bold
+            text-white
+
+            sm:h-10
+            sm:w-10
           "
         >
           A
