@@ -74,4 +74,7 @@
 
     border-radius: 12px;
   }
+  .booked-day .rdp-day_button::after {
+    bottom: 2px;
+  }
 }
