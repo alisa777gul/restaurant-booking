@@ -29,190 +29,215 @@ type Stats = {
 
 
 
-
 export default function DashboardPage(){
 
 
+const [stats,setStats] = useState<Stats>({
+  total:0,
+  pending:0,
+  confirmed:0,
+  today:0,
+});
 
-  const [
-    stats,
-    setStats
-  ] = useState<Stats>({
-    total:0,
-    pending:0,
-    confirmed:0,
-    today:0,
-  });
 
+const [reservations,setReservations] =
+useState<Reservation[]>([]);
 
 
+const [loading,setLoading] =
+useState(true);
 
-  const [
-    reservations,
-    setReservations
-  ] = useState<Reservation[]>([]);
 
 
 
 
-  const [
-    loading,
-    setLoading
-  ] = useState(true);
+useEffect(()=>{
 
 
+const controller = new AbortController();
 
 
 
+async function loadDashboard(){
 
 
+try{
 
-  useEffect(()=>{
 
+const response = await fetch(
+"/api/admin/dashboard",
+{
+signal:controller.signal,
+}
+);
 
-    const controller =
-      new AbortController();
 
 
+const data = await response.json();
 
 
-    async function loadDashboard(){
 
+if(!response.ok){
 
-      try{
+throw new Error(
+data.error ||
+"Failed to load dashboard"
+);
 
+}
 
-        const response =
-          await fetch(
-            "/api/admin/dashboard",
-            {
-              signal:
-                controller.signal,
-            }
-          );
 
 
+setStats(
+data.stats ?? {
+total:0,
+pending:0,
+confirmed:0,
+today:0,
+}
+);
 
-        const data =
-          await response.json();
 
 
+setReservations(
+data.todayReservations ?? []
+);
 
 
-        if(!response.ok){
 
-          throw new Error(
-            data.error ||
-            "Failed to load dashboard"
-          );
+}
 
-        }
+catch(error){
 
 
+if(
+error instanceof DOMException &&
+error.name==="AbortError"
+){
+return;
+}
 
 
+console.error(
+"Dashboard error:",
+error
+);
 
-        setStats(
-          data.stats ?? {
-            total:0,
-            pending:0,
-            confirmed:0,
-            today:0,
-          }
-        );
 
+}
 
 
+finally{
 
-        setReservations(
-          data.todayReservations ?? []
-        );
+setLoading(false);
 
+}
 
 
-      }
-      catch(error){
+}
 
 
-        if(
-          error instanceof DOMException &&
-          error.name === "AbortError"
-        ){
-          return;
-        }
 
+loadDashboard();
 
-        console.error(
-          "Dashboard error:",
-          error
-        );
 
 
-      }
-      finally{
+return ()=>controller.abort();
 
 
-        setLoading(false);
+},[]);
 
 
-      }
 
 
-    }
 
+if(loading){
 
+return (
 
+<div
+className="
+min-h-80
+flex
+items-center
+justify-center
+text-neutral-500
+"
+>
 
+Loading dashboard...
 
-    loadDashboard();
+</div>
 
+);
 
+}
 
 
-    return ()=>{
 
-      controller.abort();
 
-    };
 
+return (
 
-  },[]);
+<main className="w-full">
 
 
 
+<section className="mb-10">
 
 
+<div
+className="
+inline-flex
+items-center
+rounded-full
+bg-blue-500/10
+text-blue-600
+dark:text-blue-400
+px-4
+py-2
+text-sm
+font-medium
+mb-5
+"
+>
 
+✨ Overview
 
+</div>
 
 
-  if(loading){
 
+<h1
+className="
+text-3xl
+sm:text-4xl
+lg:text-5xl
+font-bold
+tracking-tight
+"
+>
 
-    return (
+Dashboard
 
-      <div
-        className="
-        min-h-75
-        flex
-        items-center
-        justify-center
-        text-neutral-400
-        text-sm
-        sm:text-base
-        "
-      >
+</h1>
 
-        Loading dashboard...
 
-      </div>
 
-    );
+<p
+className="
+mt-3
+text-neutral-500
+dark:text-neutral-400
+"
+>
 
+Manage your bookings and business activity
 
-  }
+</p>
 
 
+</section>
 
 
 
@@ -220,355 +245,414 @@ export default function DashboardPage(){
 
 
 
-  return (
 
 
-    <main
-      className="
-      w-full
-      "
-    >
+<div
+className="
+grid
+grid-cols-1
+sm:grid-cols-2
+xl:grid-cols-4
+gap-5
+"
+>
 
 
+<StatCard
+title="Today"
+value={stats.today}
+/>
 
 
+<StatCard
+title="All reservations"
+value={stats.total}
+/>
 
-      <section
-        className="
-        mb-8
-        "
-      >
 
+<StatCard
+title="Pending"
+value={stats.pending}
+/>
 
-        <h1
-          className="
-          text-3xl
-          sm:text-4xl
-          font-bold
-          "
-        >
 
-          Dashboard
+<StatCard
+title="Confirmed"
+value={stats.confirmed}
+/>
 
-        </h1>
 
+</div>
 
 
-        <p
-          className="
-          text-neutral-500
-          mt-2
-          text-sm
-          sm:text-base
-          "
-        >
 
-          Restaurant overview
 
-        </p>
 
 
-      </section>
 
 
 
+<section
 
+className="
+mt-10
 
+rounded-3xl
 
+border
+border-neutral-200
+dark:border-neutral-800
 
+bg-white/80
+dark:bg-neutral-950/80
 
+backdrop-blur-xl
 
-      {/* STATS */}
+shadow-xl
 
+p-5
+sm:p-7
 
+"
 
-      <div
-        className="
-        grid
-        grid-cols-1
-        sm:grid-cols-2
-        xl:grid-cols-4
-        gap-4
-        sm:gap-6
-        "
-      >
+>
 
 
-        <StatCard
-          title="Today"
-          value={stats.today}
-        />
+<div
+className="
+flex
+items-center
+justify-between
+mb-6
+"
+>
 
 
+<div>
 
-        <StatCard
-          title="All reservations"
-          value={stats.total}
-        />
 
+<h2
+className="
+text-xl
+sm:text-2xl
+font-bold
+"
+>
 
+Today&apos;s reservations
 
-        <StatCard
-          title="Pending"
-          value={stats.pending}
-        />
+</h2>
 
 
+<p
+className="
+text-sm
+text-neutral-500
+mt-1
+"
+>
 
-        <StatCard
-          title="Confirmed"
-          value={stats.confirmed}
-        />
+Upcoming bookings
 
+</p>
 
-      </div>
 
+</div>
 
 
+<div
+className="
+w-10
+h-10
+rounded-xl
+bg-blue-500/10
+text-blue-500
+flex
+items-center
+justify-center
+font-bold
+"
+>
 
+{reservations.length}
 
+</div>
 
 
+</div>
 
 
-      {/* TODAY RESERVATIONS */}
 
 
 
 
-      <section
-        className="
-        mt-8
-        sm:mt-12
-        bg-[#111]
-        border
-        border-neutral-800
-        rounded-2xl
-        p-4
-        sm:p-6
-        "
-      >
 
+{
+reservations.length===0 ? (
 
 
-        <h2
-          className="
-          text-xl
-          sm:text-2xl
-          font-bold
-          mb-5
-          "
-        >
+<div
+className="
+rounded-2xl
+border
+border-dashed
+border-neutral-300
+dark:border-neutral-800
+py-14
+text-center
+text-neutral-500
+"
+>
 
-          Today&apos;s reservations
+No reservations today
 
-        </h2>
+</div>
 
 
+)
 
+:
 
+(
 
 
+<div className="space-y-4">
 
-        {
-          reservations.length === 0 ? (
 
+{
+reservations.map(item=>(
 
-            <div
-              className="
-              py-10
-              text-center
-              text-neutral-500
-              "
-            >
 
-              No reservations today
+<div
 
-            </div>
+key={item.id}
 
+className="
+group
 
-          )
-          :
-          (
+flex
 
+flex-col
 
+sm:flex-row
 
-            <div
-              className="
-              space-y-3
-              "
-            >
+sm:items-center
 
+sm:justify-between
 
+gap-5
 
-              {
-                reservations.map((item)=>(
+rounded-2xl
 
+border
 
-                  <div
-                    key={item.id}
+border-neutral-200
 
-                    className="
-                    flex
-                    flex-col
-                    sm:flex-row
-                    sm:items-center
-                    sm:justify-between
-                    gap-4
-                    bg-neutral-900
-                    border
-                    border-neutral-800
-                    rounded-xl
-                    p-4
-                    "
-                  >
+dark:border-neutral-800
 
+bg-neutral-50
 
+dark:bg-neutral-900/50
 
+p-5
 
-                    <div>
+hover:border-blue-500/50
 
+hover:shadow-lg
 
-                      <p
-                        className="
-                        font-semibold
-                        text-base
-                        "
-                      >
+transition-all
 
-                        {item.name}
+"
 
-                      </p>
+>
 
 
+<div
+className="
+flex
+items-center
+gap-4
+"
+>
 
 
-                      <p
-                        className="
-                        text-neutral-400
-                        text-sm
-                        mt-1
-                        "
-                      >
+<div
 
-                        🕒 {item.time}
+className="
+w-12
+h-12
+rounded-2xl
 
-                      </p>
+bg-blue-500/10
 
+text-blue-600
 
-                    </div>
+dark:text-blue-400
 
+flex
+items-center
+justify-center
 
+font-bold
 
+"
 
+>
 
+{
+item.name
+.charAt(0)
+.toUpperCase()
+}
 
+</div>
 
 
-                    <div
-                      className="
-                      flex
-                      items-center
-                      justify-between
-                      sm:flex-col
-                      sm:items-end
-                      gap-2
-                      "
-                    >
 
 
 
-                      <p
-                        className="
-                        text-sm
-                        text-neutral-300
-                        "
-                      >
+<div>
 
-                        {item.guests} guests
 
-                      </p>
+<p
+className="
+font-bold
+text-lg
+"
+>
 
+{item.name}
 
+</p>
 
 
+<p
+className="
+text-sm
+text-neutral-500
+mt-1
+"
+>
 
-                      <span
-                        className={`
+🕒 {item.time}
 
-                        px-3
-                        py-1
-                        rounded-full
-                        text-xs
-                        font-semibold
+</p>
 
 
-                        ${
-                          item.status==="CONFIRMED"
+</div>
 
-                          ?
 
-                          "bg-green-500/10 text-green-400"
 
-                          :
+</div>
 
-                          item.status==="CANCELLED"
 
-                          ?
 
-                          "bg-red-500/10 text-red-400"
 
-                          :
 
-                          "bg-yellow-500/10 text-yellow-400"
 
-                        }
 
-                        `}
-                      >
+<div
+className="
+flex
+items-center
+justify-between
+sm:flex-col
+sm:items-end
+gap-3
+"
+>
 
-                        {item.status}
 
-                      </span>
+<p
+className="
+text-sm
+text-neutral-500
+"
+>
 
+{item.guests} guests
 
+</p>
 
-                    </div>
 
 
 
+<span
 
+className={`
 
-                  </div>
+px-4
+py-1.5
 
+rounded-full
 
-                ))
-              }
+text-xs
 
+font-semibold
 
 
+${
+item.status==="CONFIRMED"
 
+?
 
-            </div>
+"bg-green-500/10 text-green-600 dark:text-green-400"
 
+:
 
-          )
-        }
+item.status==="CANCELLED"
 
+?
 
+"bg-red-500/10 text-red-600 dark:text-red-400"
 
+:
 
+"bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
 
+}
 
-      </section>
+`}
 
+>
 
+{item.status}
 
+</span>
 
 
-    </main>
+</div>
 
 
-  );
+
+
+
+</div>
+
+
+))
+
+}
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+</section>
+
+
+
+
+
+</main>
+
+);
 
 }

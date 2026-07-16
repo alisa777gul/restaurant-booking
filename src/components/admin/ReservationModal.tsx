@@ -1,40 +1,54 @@
 "use client";
 
-import { X } from "lucide-react";
+import {
+  X,
+  Phone,
+  Mail,
+  CalendarDays,
+  Clock,
+  Users,
+  Check,
+  Ban,
+  Trash2,
+} from "lucide-react";
 
 
 type Reservation = {
-  id: number;
-  name: string;
-  phone: string;
-  email: string;
-  date: string;
-  time: string;
-  guests: string;
-  status: string;
+  id:number;
+  name:string;
+  phone:string;
+  email:string;
+  date:string;
+  time:string;
+  guests:string;
+  status:string;
 };
 
 
 type Props = {
-  reservation: Reservation;
-  onClose: () => void;
-  onUpdate: (id:number, status:string)=>void;
-  onDelete: (id:number)=>void;
+  reservation:Reservation;
+
+  onClose:()=>void;
+
+  onUpdate:(id:number,status:string)=>void;
+
+  onDelete:(id:number)=>void;
 };
 
 
 
 export default function ReservationModal({
 
-  reservation,
+reservation,
 
-  onClose,
+onClose,
 
-  onUpdate,
+onUpdate,
 
-  onDelete,
+onDelete,
 
 }:Props){
+
 
 
 return (
@@ -45,20 +59,17 @@ className="
 fixed
 inset-0
 
-bg-black/70
-
-backdrop-blur-sm
-
-flex
-items-end
-sm:items-center
-justify-center
-
 z-50
 
-p-3
-sm:p-4
+flex
+items-center
+justify-center
 
+p-4
+
+bg-black/60
+
+backdrop-blur-md
 "
 
 >
@@ -67,25 +78,25 @@ sm:p-4
 <div
 
 className="
-bg-[#111]
-
-border
-border-neutral-800
-
-rounded-3xl
+relative
 
 w-full
 
-max-w-lg
+max-w-xl
 
-max-h-[90vh]
+rounded-3xl
 
-overflow-y-auto
+border
 
-p-5
-sm:p-8
+border-neutral-200
+dark:border-neutral-800
+
+bg-white
+dark:bg-neutral-950
 
 shadow-2xl
+
+overflow-hidden
 
 "
 
@@ -93,34 +104,53 @@ shadow-2xl
 
 
 
+
+
+{/* HEADER */}
 
 
 <div
 
 className="
 flex
-
+items-start
 justify-between
 
-items-start
+p-6
+sm:p-8
 
-gap-4
+border-b
 
-mb-6
-
+border-neutral-200
+dark:border-neutral-800
 "
 
 >
+
+
+<div>
+
+
+<p
+className="
+text-sm
+text-neutral-500
+"
+>
+Reservation
+</p>
 
 
 <h2
 
 className="
-text-xl
-sm:text-2xl
+mt-1
+
+text-2xl
 
 font-bold
 
+tracking-tight
 "
 
 >
@@ -130,23 +160,39 @@ Reservation details
 </h2>
 
 
+</div>
+
+
+
+
 
 <button
 
 onClick={onClose}
 
 className="
-text-neutral-400
+w-10
+h-10
 
-hover:text-white
+rounded-xl
+
+flex
+items-center
+justify-center
+
+bg-neutral-100
+dark:bg-neutral-900
+
+text-neutral-500
+
+hover:text-red-500
 
 transition
-
 "
 
 >
 
-<X size={24}/>
+<X size={20}/>
 
 </button>
 
@@ -159,13 +205,17 @@ transition
 
 
 
+{/* CONTENT */}
+
+
 
 <div
 
 className="
-space-y-4
-sm:space-y-5
+p-6
+sm:p-8
 
+space-y-6
 "
 
 >
@@ -173,52 +223,114 @@ sm:space-y-5
 
 
 
+
+{/* CLIENT */}
+
+
+<div
+
+className="
+rounded-2xl
+
+bg-neutral-100
+dark:bg-neutral-900
+
+p-5
+"
+
+>
+
+
+<div
+className="
+flex
+items-center
+gap-4
+"
+>
+
+
+<div
+
+className="
+w-14
+h-14
+
+rounded-2xl
+
+bg-blue-500/10
+
+text-blue-500
+
+flex
+items-center
+justify-center
+
+font-bold
+
+text-xl
+
+"
+
+>
+
+{
+reservation.name
+.charAt(0)
+.toUpperCase()
+}
+
+</div>
+
+
+
 <div>
 
-<p className="text-neutral-500 text-sm">
-Name
-</p>
 
-<p className="text-lg font-semibold">
+<h3
+
+className="
+text-lg
+
+font-bold
+"
+
+>
+
 {reservation.name}
-</p>
 
-</div>
-
+</h3>
 
 
+<div
 
+className="
+flex
+items-center
+gap-2
 
+text-sm
 
-<div>
+text-neutral-500
 
-<p className="text-neutral-500 text-sm">
-Phone
-</p>
-
-<p>
-{reservation.phone}
-</p>
-
-</div>
-
-
-
-
-
-
-<div>
-
-<p className="text-neutral-500 text-sm">
-Email
-</p>
-
-<p className="
-break-all
+mt-1
 "
+
 >
-{reservation.email}
-</p>
+
+<Phone size={14}/>
+
+{reservation.phone}
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
 
 </div>
 
@@ -228,6 +340,7 @@ break-all
 
 
 
+{/* INFO GRID */}
 
 
 <div
@@ -237,7 +350,7 @@ grid
 
 grid-cols-1
 
-sm:grid-cols-3
+sm:grid-cols-2
 
 gap-4
 
@@ -247,82 +360,120 @@ gap-4
 
 
 
-<div>
+<Info
 
-<p className="text-neutral-500 text-sm">
-Date
-</p>
+icon={<Mail size={17}/>}
 
-<p>
-{reservation.date}
-</p>
+title="Email"
+
+value={reservation.email}
+
+/>
+
+
+
+<Info
+
+icon={<CalendarDays size={17}/>}
+
+title="Date"
+
+value={reservation.date}
+
+/>
+
+
+
+<Info
+
+icon={<Clock size={17}/>}
+
+title="Time"
+
+value={reservation.time}
+
+/>
+
+
+
+<Info
+
+icon={<Users size={17}/>}
+
+title="Guests"
+
+value={reservation.guests}
+
+/>
+
+
 
 </div>
 
 
 
 
-<div>
-
-<p className="text-neutral-500 text-sm">
-Time
-</p>
-
-<p>
-{reservation.time}
-</p>
-
-</div>
 
 
 
 
-
-<div>
-
-<p className="text-neutral-500 text-sm">
-Guests
-</p>
-
-<p>
-{reservation.guests}
-</p>
-
-</div>
+{/* STATUS */}
 
 
+<div
+
+className="
+flex
+
+items-center
+
+justify-between
+
+rounded-2xl
+
+border
+
+border-neutral-200
+dark:border-neutral-800
+
+p-4
+
+"
+
+>
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<div>
-
-<p className="text-neutral-500 text-sm">
+<span
+className="
+text-sm
+text-neutral-500
+"
+>
 Status
-</p>
+</span>
 
 
 
-<p
+<span
 
 className={`
 
+px-4
+py-2
+
+rounded-full
+
+text-sm
+
 font-semibold
+
 
 ${
 reservation.status==="CONFIRMED"
 
 ?
 
-"text-green-400"
+"bg-green-500/10 text-green-500"
 
 :
 
@@ -330,11 +481,11 @@ reservation.status==="CANCELLED"
 
 ?
 
-"text-red-400"
+"bg-red-500/10 text-red-500"
 
 :
 
-"text-yellow-400"
+"bg-yellow-500/10 text-yellow-500"
 
 }
 
@@ -344,7 +495,7 @@ reservation.status==="CANCELLED"
 
 {reservation.status}
 
-</p>
+</span>
 
 
 </div>
@@ -353,13 +504,10 @@ reservation.status==="CANCELLED"
 
 
 
-</div>
 
 
 
-
-
-
+{/* ACTIONS */}
 
 
 
@@ -374,7 +522,7 @@ sm:grid-cols-3
 
 gap-3
 
-mt-8
+pt-2
 
 "
 
@@ -382,28 +530,28 @@ mt-8
 
 
 
-
-
 <button
 
-onClick={()=>
-
-
-onUpdate(
+onClick={()=>onUpdate(
 reservation.id,
 "CONFIRMED"
-)
-
-}
+)}
 
 className="
+flex
+items-center
+justify-center
+gap-2
+
+rounded-2xl
+
 bg-green-600
 
 hover:bg-green-500
 
-rounded-xl
+text-white
 
-py-3
+py-3.5
 
 font-semibold
 
@@ -412,6 +560,8 @@ transition
 "
 
 >
+
+<Check size={18}/>
 
 Confirm
 
@@ -422,27 +572,28 @@ Confirm
 
 
 
-
 <button
 
-onClick={()=>
-
-
-onUpdate(
+onClick={()=>onUpdate(
 reservation.id,
 "CANCELLED"
-)
-
-}
+)}
 
 className="
+flex
+items-center
+justify-center
+gap-2
+
+rounded-2xl
+
 bg-red-600
 
 hover:bg-red-500
 
-rounded-xl
+text-white
 
-py-3
+py-3.5
 
 font-semibold
 
@@ -451,6 +602,8 @@ transition
 "
 
 >
+
+<Ban size={18}/>
 
 Cancel
 
@@ -464,29 +617,37 @@ Cancel
 
 <button
 
-onClick={()=>
-
-
-onDelete(
+onClick={()=>onDelete(
 reservation.id
-)
-
-}
+)}
 
 className="
-bg-neutral-800
+flex
+items-center
+justify-center
+gap-2
 
-hover:bg-neutral-700
+rounded-2xl
 
-rounded-xl
+bg-neutral-200
 
-py-3
+dark:bg-neutral-800
+
+hover:bg-neutral-300
+
+dark:hover:bg-neutral-700
+
+py-3.5
+
+font-semibold
 
 transition
 
 "
 
 >
+
+<Trash2 size={18}/>
 
 Delete
 
@@ -496,11 +657,13 @@ Delete
 
 
 
-
 </div>
 
 
 
+
+
+</div>
 
 
 </div>
@@ -510,5 +673,96 @@ Delete
 
 
 );
+
+}
+
+
+
+
+
+
+
+function Info({
+
+icon,
+
+title,
+
+value,
+
+}:{
+
+icon:React.ReactNode;
+
+title:string;
+
+value:string;
+
+}){
+
+
+return (
+
+<div
+
+className="
+rounded-2xl
+
+border
+
+border-neutral-200
+dark:border-neutral-800
+
+p-4
+
+"
+
+>
+
+
+<div
+
+className="
+flex
+items-center
+gap-2
+
+text-neutral-500
+
+text-sm
+
+mb-2
+
+"
+
+>
+
+{icon}
+
+{title}
+
+</div>
+
+
+
+<p
+
+className="
+font-medium
+
+break-all
+"
+
+>
+
+{value}
+
+</p>
+
+
+</div>
+
+);
+
 
 }

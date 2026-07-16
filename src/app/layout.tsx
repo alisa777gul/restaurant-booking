@@ -1,95 +1,65 @@
 import type { Metadata } from "next";
-
-import { Geist, Geist_Mono } from "next/font/google";
-
+import { Geist } from "next/font/google";
 import "./globals.css";
 
+import ThemeProvider from "@/components/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+
+const geist = Geist({
+  subsets:["latin"],
 });
-
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 
 
 export const metadata: Metadata = {
 
-  title: "La Casa | Fine Dining Restaurant",
+  title:"BookFlow - Smart Booking System",
 
   description:
-    "Experience modern cuisine, premium ingredients and unforgettable atmosphere at La Casa restaurant.",
-
-
-  keywords: [
-    "restaurant",
-    "fine dining",
-    "reservation",
-    "booking",
-    "La Casa",
-  ],
-
-
-  icons: {
-    icon: "/favicon.ico",
-  },
+  "Modern booking platform for every business",
 
 };
 
 
 
 export default function RootLayout({
-
-  children,
-
-}: Readonly<{
-
-  children: React.ReactNode;
-
-}>) {
+children,
+}:{
+children:React.ReactNode;
+}){
 
 
-  return (
+return (
 
-    <html
+<html
+lang="en"
+suppressHydrationWarning
+>
 
-      lang="en"
-
-      className={`
-        ${geistSans.variable}
-        ${geistMono.variable}
-        h-full
-        antialiased
-      `}
-
-    >
-
-
-      <body
-
-        className="
-        min-h-screen
-        bg-[#0b0b0b]
-        text-white
-        flex
-        flex-col
-        "
-
-      >
-
-        {children}
+<body
+className={`
+${geist.className}
+min-h-screen
+bg-white
+text-neutral-900
+dark:bg-[#09090b]
+dark:text-white
+`}
+>
 
 
-      </body>
+<ThemeProvider>
+
+{children}
+
+</ThemeProvider>
 
 
-    </html>
+</body>
 
-  );
+
+</html>
+
+);
+
 
 }

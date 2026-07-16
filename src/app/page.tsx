@@ -1,481 +1,643 @@
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 
 
-export default function Home() {
+export default function Home(){
 
-  return (
+return (
 
-    <main
-      className="
-      min-h-screen
-      bg-[#0b0b0b]
-      text-white
-      "
-    >
+<main
+className="
+min-h-screen
+overflow-hidden
+bg-linear-to-b
+from-white
+via-neutral-50
+to-neutral-100
 
+dark:from-[#050505]
+dark:via-[#09090b]
+dark:to-[#111]
 
+text-neutral-900
+dark:text-white
+"
+>
 
-      {/* HEADER */}
 
-      <header
-        className="
-        max-w-7xl
-        mx-auto
-        px-4
-        sm:px-6
-        py-6
-        flex
-        items-center
-        justify-between
-        "
-      >
 
+{/* HEADER */}
 
-        <div
-          className="
-          text-lg
-          sm:text-xl
-          font-semibold
-          tracking-[0.3em]
-          "
-        >
-          LA CASA
-        </div>
+<header
+className="
+max-w-7xl
+mx-auto
+px-5
+sm:px-8
+py-6
+flex
+items-center
+justify-between
+"
+>
 
 
+<div
+className="
+text-2xl
+font-bold
+tracking-tight
+"
+>
+BookFlow
+</div>
 
 
-        <nav
-          className="
-          hidden
-          md:flex
-          items-center
-          gap-10
-          text-sm
-          text-neutral-400
-          "
-        >
 
-          <a
-            href="#menu"
-            className="hover:text-white transition"
-          >
-            Menu
-          </a>
+<nav
+className="
+hidden
+md:flex
+gap-10
+text-sm
+text-neutral-500
+dark:text-neutral-400
+"
+>
 
+<a className="hover:text-black dark:hover:text-white transition">
+Features
+</a>
 
-          <a
-            href="#about"
-            className="hover:text-white transition"
-          >
-            About
-          </a>
+<a className="hover:text-black dark:hover:text-white transition">
+Pricing
+</a>
 
+<a className="hover:text-black dark:hover:text-white transition">
+Contact
+</a>
 
-          <a
-            href="#contact"
-            className="hover:text-white transition"
-          >
-            Contact
-          </a>
 
+</nav>
 
-        </nav>
 
 
 
 
-        <Link
+<div
+className="
+flex
+items-center
+gap-3
+"
+>
 
-          href="/reservation"
 
-          className="
-          rounded-full
-          border
-          border-yellow-500
-          px-5
-          py-2.5
-          text-sm
-          text-yellow-500
-          hover:bg-yellow-500
-          hover:text-black
-          transition
-          "
+<ThemeToggle />
 
-        >
 
-          Book
 
-        </Link>
+<Link
+href="/login"
+className="
+px-4
+py-2
+rounded-full
+text-sm
+hover:bg-neutral-200
+dark:hover:bg-neutral-800
+transition
+"
+>
+Login
+</Link>
 
 
 
-      </header>
+<Link
+href="/register"
+className="
+rounded-full
+bg-black
+dark:bg-white
+text-white
+dark:text-black
+px-5
+py-2.5
+text-sm
+font-semibold
+transition
+hover:scale-105
+"
+>
+Get started
+</Link>
 
 
+</div>
 
 
 
+</header>
 
 
-      {/* HERO */}
 
 
-      <section
 
-        className="
-        max-w-7xl
-        mx-auto
-        px-4
-        sm:px-6
-        pt-16
-        sm:pt-24
-        pb-24
-        sm:pb-32
-        "
 
-      >
 
 
-        <div
-          className="
-          max-w-4xl
-          "
-        >
+{/* HERO */}
 
 
+<section
+className="
+relative
+max-w-7xl
+mx-auto
+px-5
+sm:px-8
+pt-20
+pb-32
+"
+>
 
-          <p
-            className="
-            uppercase
-            tracking-[0.35em]
-            sm:tracking-[0.5em]
-            text-yellow-500
-            text-xs
-            sm:text-sm
-            mb-6
-            sm:mb-8
-            "
-          >
 
-            Fine Dining Experience
+<div
+className="
+absolute
+top-20
+right-0
+w-125
+h-125
+bg-blue-500/20
+blur-[120px]
+rounded-full
+"
+/>
 
-          </p>
 
 
+<div
+className="
+relative
+grid
+lg:grid-cols-2
+gap-16
+items-center
+"
+>
 
 
 
-          <h1
 
-            className="
-            text-5xl
-            sm:text-7xl
-            lg:text-8xl
-            font-bold
-            leading-[0.9]
-            "
 
-          >
+<div>
 
-            Taste
-            <br />
-            The Art
 
-          </h1>
+<div
+className="
+inline-flex
+rounded-full
+px-4
+py-2
+bg-blue-500/10
+text-blue-600
+dark:text-blue-400
+text-sm
+"
+>
+✨ Smart booking platform
+</div>
 
 
 
 
+<h1
+className="
+mt-8
+text-5xl
+sm:text-6xl
+lg:text-7xl
+font-bold
+tracking-tight
+leading-none
+"
+>
 
-          <p
+Manage bookings.
+<br/>
 
-            className="
-            mt-6
-            sm:mt-8
-            text-base
-            sm:text-lg
-            text-neutral-400
-            max-w-xl
-            leading-relaxed
-            "
+Grow your business.
 
-          >
+</h1>
 
-            Discover modern cuisine crafted with passion,
-            premium ingredients and unforgettable atmosphere.
 
-          </p>
 
 
+<p
+className="
+mt-6
+max-w-xl
+text-lg
+text-neutral-500
+dark:text-neutral-400
+leading-relaxed
+"
+>
 
+One powerful booking system for salons,
+clinics, restaurants and professionals.
+Automate schedules, clients and payments.
 
+</p>
 
-          <Link
 
-            href="/reservation"
 
-            className="
-            inline-flex
-            mt-8
-            sm:mt-10
-            rounded-full
-            bg-yellow-500
-            px-7
-            sm:px-8
-            py-4
-            text-black
-            font-semibold
-            hover:bg-yellow-400
-            active:scale-95
-            transition
-            "
 
-          >
 
-            Rezervovať stôl
+<div
+className="
+mt-10
+flex
+flex-wrap
+gap-4
+"
+>
 
-          </Link>
 
+<Link
+href="/register"
+className="
+rounded-2xl
+bg-blue-600
+text-white
+px-8
+py-4
+font-semibold
+shadow-xl
+shadow-blue-500/20
+hover:scale-105
+transition
+"
+>
+Start free
+</Link>
 
 
-        </div>
 
+<Link
+href="/reservation"
+className="
+rounded-2xl
+border
+border-neutral-300
+dark:border-neutral-700
+px-8
+py-4
+hover:bg-neutral-100
+dark:hover:bg-neutral-900
+transition
+"
+>
+Live demo
+</Link>
 
-      </section>
 
+</div>
 
 
+</div>
 
 
 
 
 
 
-      {/* FEATURES */}
 
 
-      <section
 
-        id="menu"
+{/* APP PREVIEW */}
 
-        className="
-        max-w-7xl
-        mx-auto
-        px-4
-        sm:px-6
-        pb-20
-        grid
-        grid-cols-1
-        md:grid-cols-3
-        gap-4
-        sm:gap-6
-        "
 
-      >
+<div
+className="
+relative
+"
+>
 
 
 
 
+<div
+className="
+absolute
+-top-6
+right-4
+z-10
+rounded-2xl
+bg-white
+dark:bg-neutral-900
+border
+border-neutral-200
+dark:border-neutral-800
+shadow-xl
+px-5
+py-4
+"
+>
 
-        <div
 
-          className="
-          group
-          border
-          border-neutral-800
-          rounded-3xl
-          p-6
-          sm:p-8
-          bg-neutral-950
-          hover:border-yellow-500/50
-          transition
-          "
+<p className="
+text-xs
+text-neutral-500
+">
+Today&apos;s bookings
+</p>
 
-        >
 
-          <h3
-            className="
-            text-xl
-            font-semibold
-            "
-          >
+<p className="
+text-3xl
+font-bold
+">
+24
+</p>
 
-            Fresh Ingredients
 
-          </h3>
+</div>
 
 
-          <p
-            className="
-            mt-3
-            text-neutral-400
-            leading-relaxed
-            "
-          >
 
-            Carefully selected products from local suppliers.
 
-          </p>
 
 
-        </div>
 
+<div
+className="
+rounded-3xl
+border
+border-neutral-200
+dark:border-neutral-800
 
+bg-white/80
+dark:bg-neutral-950/80
 
+backdrop-blur-xl
 
+shadow-2xl
 
+p-6
+"
+>
 
 
-        <div
 
-          className="
-          border
-          border-neutral-800
-          rounded-3xl
-          p-6
-          sm:p-8
-          bg-neutral-950
-          hover:border-yellow-500/50
-          transition
-          "
+<div
+className="
+flex
+justify-between
+mb-8
+"
+>
 
-        >
+<div>
 
+<p className="text-sm text-neutral-500">
+Dashboard
+</p>
 
-          <h3
-            className="
-            text-xl
-            font-semibold
-            "
-          >
 
-            Private Events
+<h2 className="
+text-xl
+font-bold
+">
+Schedule
+</h2>
 
-          </h3>
 
+</div>
 
 
-          <p
-            className="
-            mt-3
-            text-neutral-400
-            leading-relaxed
-            "
-          >
 
-            Elegant space for special occasions.
+<div
+className="
+w-10
+h-10
+rounded-full
+bg-blue-600
+text-white
+flex
+items-center
+justify-center
+font-bold
+"
+>
+B
+</div>
 
-          </p>
 
+</div>
 
-        </div>
 
 
 
 
 
 
+<div
+className="
+grid
+grid-cols-3
+gap-3
+mb-6
+"
+>
 
 
+{
+[
+["Bookings","128"],
+["Clients","542"],
+["Revenue","€8.4k"]
 
-        <div
+].map(item=>(
 
-          className="
-          border
-          border-neutral-800
-          rounded-3xl
-          p-6
-          sm:p-8
-          bg-neutral-950
-          hover:border-yellow-500/50
-          transition
-          "
 
-        >
+<div
+key={item[0]}
+className="
+rounded-2xl
+bg-neutral-100
+dark:bg-neutral-900
+p-4
+"
+>
 
+<p className="text-xs text-neutral-500">
+{item[0]}
+</p>
 
-          <h3
-            className="
-            text-xl
-            font-semibold
-            "
-          >
+<p className="font-bold mt-2">
+{item[1]}
+</p>
 
-            Reservation
 
-          </h3>
+</div>
 
 
+))
 
-          <p
-            className="
-            mt-3
-            text-neutral-400
-            leading-relaxed
-            "
-          >
+}
 
-            Book your table quickly online.
 
-          </p>
+</div>
 
 
-        </div>
 
 
 
 
 
-      </section>
 
+<div
+className="
+rounded-2xl
+border
+border-neutral-200
+dark:border-neutral-800
+p-4
+"
+>
 
 
+<p className="font-semibold mb-4">
+Today&apos;s schedule
+</p>
 
 
 
-      {/* FOOTER ADMIN LINK */}
 
+{
+[
+["09:00","Anna Smith"],
+["11:30","Michael Brown"],
+["15:00","Sarah Wilson"]
 
-      <footer
+].map(item=>(
 
-        className="
-        max-w-7xl
-        mx-auto
-        px-4
-        sm:px-6
-        pb-8
-        text-center
-        "
 
-      >
+<div
+key={item[0]}
+className="
+flex
+justify-between
+items-center
+bg-neutral-100
+dark:bg-neutral-900
+rounded-xl
+px-4
+py-3
+mb-3
+"
+>
 
 
-        <Link
+<div>
 
-          href="/admin/login"
+<p className="font-medium">
+{item[1]}
+</p>
 
-          className="
-          text-xs
-          text-neutral-700
-          hover:text-neutral-400
-          transition
-          "
 
-        >
+<p className="text-xs text-neutral-500">
+{item[0]}
+</p>
 
-          Admin
 
-        </Link>
+</div>
 
 
-      </footer>
 
+<span
+className="
+text-green-500
+text-xs
+font-semibold
+"
+>
+Confirmed
+</span>
 
 
+</div>
 
-    </main>
 
-  );
+))
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<div
+className="
+absolute
+-bottom-5
+-left-5
+rounded-2xl
+bg-blue-600
+text-white
+px-6
+py-4
+shadow-xl
+"
+>
+
+<p className="text-xs opacity-80">
+Growth
+</p>
+
+<p className="text-xl font-bold">
++42%
+</p>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+</main>
+
+)
 
 }

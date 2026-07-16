@@ -1,187 +1,159 @@
-export default function Topbar() {
-  return (
+"use client";
 
-    <header
+import { Menu } from "lucide-react";
 
-      className="
-      min-h-16
-      sm:min-h-20
 
-      border-b
-      border-neutral-800
+export default function Topbar({
+setOpen,
+}:{
+setOpen:(value:boolean)=>void;
+}) {
 
-      flex
-      items-center
-      justify-between
 
-      px-4
-      sm:px-6
-      lg:px-10
+return (
 
-      gap-4
+<header
+className="
+sticky
+top-0
+z-30
 
-      "
+h-16
+sm:h-20
 
-    >
+flex
+items-center
+justify-between
 
+px-4
+sm:px-6
+lg:px-10
 
-      {/* TITLE */}
+border-b
+border-neutral-200
+dark:border-neutral-800
 
-      <div className="min-w-0">
+bg-white/80
+dark:bg-neutral-950/80
 
+backdrop-blur-xl
+"
+>
 
-        <h2
 
-          className="
-          text-lg
-          sm:text-2xl
 
-          font-bold
+<div className="flex items-center gap-4">
 
-          truncate
 
-          "
+<button
 
-        >
+onClick={()=>setOpen(true)}
 
-          Restaurant Dashboard
+className="
+lg:hidden
 
-        </h2>
+w-10
+h-10
 
+flex
+items-center
+justify-center
 
+rounded-xl
 
-        <p
+bg-white
+dark:bg-neutral-900
 
-          className="
-          text-neutral-500
+border
+border-neutral-200
+dark:border-neutral-800
 
-          text-sm
+shadow-sm
 
-          hidden
-          sm:block
+"
 
-          "
+>
 
-        >
+<Menu size={22}/>
 
-          Manage reservations
+</button>
 
-        </p>
 
 
-      </div>
+<div>
 
+<h1
+className="
+text-lg
+sm:text-2xl
 
+font-bold
 
+text-neutral-900
+dark:text-white
+"
+>
+BookFlow
+</h1>
 
 
+<p
+className="
+hidden
+sm:block
 
+text-sm
+text-neutral-500
+"
+>
+Booking management platform
+</p>
 
 
+</div>
 
-      {/* USER */}
 
+</div>
 
-      <div
 
-        className="
-        flex
-        items-center
-        gap-3
 
-        "
 
-      >
 
+<div>
 
+<div
+className="
+w-9
+h-9
 
-        <div
+sm:w-10
+sm:h-10
 
-          className="
-          w-10
-          h-10
+rounded-2xl
 
-          sm:w-11
-          sm:h-11
+bg-linear-to-br
+from-blue-500
+to-indigo-600
 
-          rounded-full
+flex
+items-center
+justify-center
 
-          bg-yellow-500
+text-white
+font-bold
+"
+>
+A
+</div>
 
-          flex
-          items-center
-          justify-center
 
-          text-black
+</div>
 
-          font-bold
 
-          shrink-0
 
-          "
+</header>
 
-        >
 
-          A
+);
 
-        </div>
-
-
-
-
-
-        <div
-
-          className="
-          hidden
-          sm:block
-
-          "
-
-        >
-
-
-          <p
-
-            className="
-            font-semibold
-            text-sm
-            "
-
-          >
-
-            Administrator
-
-          </p>
-
-
-
-          <p
-
-            className="
-            text-sm
-            text-neutral-500
-
-            "
-
-          >
-
-            Online
-
-          </p>
-
-
-
-        </div>
-
-
-
-      </div>
-
-
-
-
-    </header>
-
-  );
 }

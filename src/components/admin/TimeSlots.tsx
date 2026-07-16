@@ -147,98 +147,412 @@ export default function TimeSlots({ date }: Props) {
 
 
   return (
-    <div className="mt-8 border-t border-neutral-800 pt-6">
+  <div
+    className="
+    mt-8
+    pt-8
+    border-t
+    border-neutral-200
+    dark:border-neutral-800
+    "
+  >
 
-      <div className="flex items-center gap-3 mb-5">
-        <div className="p-2 rounded-xl bg-yellow-500/10 text-yellow-400">
-          <Clock size={20} />
+
+    {/* HEADER */}
+
+    <div
+      className="
+      flex
+      items-center
+      justify-between
+      mb-6
+      "
+    >
+
+      <div
+        className="
+        flex
+        items-center
+        gap-4
+        "
+      >
+
+        <div
+          className="
+          w-11
+          h-11
+          rounded-2xl
+          flex
+          items-center
+          justify-center
+          bg-blue-500/10
+          text-blue-500
+          "
+        >
+          <Clock size={22}/>
         </div>
 
+
         <div>
-          <h3 className="font-bold">
+
+          <h3
+            className="
+            font-bold
+            text-lg
+            tracking-tight
+            "
+          >
             Available times
           </h3>
 
-          <p className="text-sm text-neutral-500">
-            For selected day
+
+          <p
+            className="
+            text-sm
+            text-neutral-500
+            "
+          >
+            Manage working hours for this day
           </p>
+
         </div>
+
+
       </div>
 
 
-      {slots.length === 0 ? (
+      <span
+        className="
+        text-xs
+        px-3
+        py-1.5
+        rounded-full
+        bg-blue-500/10
+        text-blue-500
+        font-medium
+        "
+      >
+        {slots.length} slots
+      </span>
 
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 text-sm text-neutral-500">
-          No available times
+
+    </div>
+
+
+
+
+
+    {/* EMPTY STATE */}
+
+
+    {
+      slots.length === 0 ? (
+
+
+        <div
+          className="
+          rounded-3xl
+          border
+          border-dashed
+          border-neutral-300
+          dark:border-neutral-800
+
+          bg-neutral-50
+          dark:bg-neutral-900/40
+
+          p-8
+
+          text-center
+          "
+        >
+
+          <Clock
+            size={34}
+            className="
+            mx-auto
+            text-neutral-400
+            "
+          />
+
+
+          <p
+            className="
+            mt-4
+            font-medium
+            "
+          >
+            No available times
+          </p>
+
+
+          <p
+            className="
+            text-sm
+            text-neutral-500
+            mt-1
+            "
+          >
+            Add working hours below
+          </p>
+
+
         </div>
 
-      ) : (
 
-        <div className="space-y-3">
+      )
 
-          {slots.map((slot) => (
 
-            <div
-              key={slot.id}
-              className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3"
-            >
+      :
 
-              <div className="flex items-center gap-3">
 
-                <Clock
-                  size={16}
-                  className="text-yellow-400"
-                />
+      (
 
-                <span className="font-medium">
-                  {slot.time}
-                </span>
+
+        <div
+          className="
+          grid
+          sm:grid-cols-2
+          gap-3
+          "
+        >
+
+          {
+            slots.map((slot)=>(
+
+
+              <div
+                key={slot.id}
+
+                className="
+                group
+
+                flex
+                items-center
+                justify-between
+
+                rounded-2xl
+
+                border
+                border-neutral-200
+                dark:border-neutral-800
+
+                bg-white
+                dark:bg-neutral-950
+
+                px-5
+                py-4
+
+                shadow-sm
+
+                hover:border-blue-500/40
+                hover:shadow-md
+
+                transition-all
+                "
+              >
+
+
+                <div
+                  className="
+                  flex
+                  items-center
+                  gap-3
+                  "
+                >
+
+                  <div
+                    className="
+                    w-9
+                    h-9
+                    rounded-xl
+                    bg-yellow-500/10
+                    text-yellow-500
+                    flex
+                    items-center
+                    justify-center
+                    "
+                  >
+
+                    <Clock size={17}/>
+
+                  </div>
+
+
+
+                  <span
+                    className="
+                    font-semibold
+                    "
+                  >
+                    {slot.time}
+                  </span>
+
+
+                </div>
+
+
+
+
+                <button
+
+                  onClick={() => deleteTime(slot.id)}
+
+                  disabled={loading}
+
+
+                  className="
+                  w-9
+                  h-9
+
+                  rounded-xl
+
+                  flex
+                  items-center
+                  justify-center
+
+                  text-red-500
+
+                  hover:bg-red-500/10
+
+                  disabled:opacity-50
+
+                  transition
+                  "
+
+                >
+
+                  <Trash2 size={17}/>
+
+                </button>
+
+
 
               </div>
 
 
-              <button
-                onClick={() => deleteTime(slot.id)}
-                disabled={loading}
-                className="text-red-400 hover:text-red-300 disabled:opacity-50 transition"
-              >
-                <Trash2 size={18} />
-              </button>
+            ))
+          }
 
-            </div>
-
-          ))}
 
         </div>
 
-      )}
+
+      )
+    }
 
 
 
-      <div className="flex gap-3 mt-5">
-
-        <input
-          type="time"
-          value={newTime}
-          onChange={(e) => setNewTime(e.target.value)}
-          className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 outline-none focus:border-yellow-500"
-        />
 
 
-        <button
-          onClick={addTime}
-          disabled={loading}
-          className="flex items-center gap-2 bg-yellow-500 text-black px-5 rounded-xl font-semibold hover:bg-yellow-400 disabled:opacity-50 transition"
-        >
 
-          <Plus size={18} />
 
-          Add
+    {/* ADD TIME */}
 
-        </button>
 
-      </div>
+    <div
+      className="
+      mt-6
+
+      flex
+      flex-col
+      sm:flex-row
+
+      gap-3
+
+      rounded-3xl
+
+      border
+      border-neutral-200
+      dark:border-neutral-800
+
+      bg-neutral-50
+      dark:bg-neutral-900/50
+
+      p-4
+      "
+    >
+
+
+      <input
+
+        type="time"
+
+        value={newTime}
+
+        onChange={(e)=>setNewTime(e.target.value)}
+
+        className="
+        flex-1
+
+        rounded-2xl
+
+        bg-white
+        dark:bg-neutral-950
+
+        border
+        border-neutral-200
+        dark:border-neutral-800
+
+        px-4
+        py-3
+
+        outline-none
+
+        focus:border-blue-500
+
+        transition
+        "
+
+      />
+
+
+
+
+      <button
+
+        onClick={addTime}
+
+        disabled={loading}
+
+        className="
+        flex
+        items-center
+        justify-center
+        gap-2
+
+        rounded-2xl
+
+        bg-blue-600
+
+        text-white
+
+        px-6
+        py-3
+
+        font-semibold
+
+        hover:bg-blue-500
+
+        active:scale-95
+
+        disabled:opacity-50
+
+        transition
+        "
+
+      >
+
+        <Plus size={18}/>
+
+        Add time
+
+      </button>
+
 
     </div>
-  );
+
+
+
+  </div>
+);
 }

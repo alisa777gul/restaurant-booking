@@ -340,451 +340,660 @@ const [times, setTimes] = useState<string[]>([]);
 
   return (
 
-    <main className="
-      min-h-screen
-      bg-[#0b0b0b]
-      text-white
-      px-6
-      py-20
-    ">
+<main
+className="
+min-h-screen
 
+bg-linear-to-br
+from-neutral-50
+via-white
+to-blue-50
 
-      <section className="
-        max-w-3xl
-        mx-auto
-      ">
+dark:from-[#050505]
+dark:via-[#09090b]
+dark:to-[#111827]
 
+text-neutral-900
+dark:text-white
 
+px-4
+sm:px-6
+py-12
+sm:py-20
+"
+>
 
-        <p className="
-          text-yellow-500
-          uppercase
-          tracking-[0.4em]
-          text-sm
-        ">
-          Reservation
-        </p>
 
+<section
+className="
+max-w-3xl
+mx-auto
+"
+>
 
 
-        <h1 className="
-          text-5xl
-          font-bold
-          mt-6
-        ">
-          Book your table
-        </h1>
 
+<div
+className="
+text-center
+"
+>
 
 
+<div
+className="
+inline-flex
+px-4
+py-2
+rounded-full
 
-        {success && (
+bg-blue-500/10
 
-          <div className="
-            mt-8
-            rounded-xl
-            bg-green-900/30
-            border
-            border-green-700
-            p-5
-          ">
+text-blue-600
+dark:text-blue-400
 
-            <p className="
-              text-green-400
-              font-semibold
-            ">
-              Reservation successful!
-            </p>
+text-sm
+font-medium
+"
+>
 
+✨ Online booking
 
-            <p className="text-neutral-300 mt-2">
-              We will contact you shortly.
-            </p>
+</div>
 
 
-          </div>
 
-        )}
+<h1
+className="
+mt-6
 
+text-4xl
+sm:text-6xl
 
+font-bold
 
+tracking-tight
 
-        {error && (
+"
+>
 
-          <div className="
-            mt-8
-            rounded-xl
-            bg-red-900/30
-            border
-            border-red-700
-            p-5
-          ">
+Book your appointment
 
-            <p className="text-red-400">
-              {error}
-            </p>
+</h1>
 
 
-          </div>
 
-        )}
+<p
+className="
+mt-4
 
+text-neutral-500
+dark:text-neutral-400
 
+max-w-xl
+mx-auto
 
+"
+>
 
+Choose a convenient time and reserve your
+appointment in seconds.
 
+</p>
 
 
-        <div className="
-          mt-12
-          grid
-          gap-6
-        ">
+</div>
 
 
 
 
 
-          <div>
 
-            <label className="
-              block
-              mb-3
-              text-neutral-300
-            ">
-              Choose date
-            </label>
 
 
-            <Calendar
 
-              value={selectedDate}
+{
+success && (
 
-              onChange={handleDateChange}
+<div
+className="
+mt-10
 
-            />
+rounded-3xl
 
+bg-green-500/10
 
-          </div>
+border
+border-green-500/30
 
+p-6
 
+backdrop-blur-xl
+"
+>
 
+<p
+className="
+text-green-600
+dark:text-green-400
 
+font-semibold
+text-lg
+"
+>
+Reservation successful 🎉
+</p>
 
 
+<p
+className="
+mt-2
+text-neutral-600
+dark:text-neutral-400
+"
+>
+We will contact you shortly.
+</p>
 
 
-          <div>
+</div>
 
+)
 
-            <label className="
-              block
-              mb-3
-              text-neutral-300
-            ">
-              Choose time
-            </label>
+}
 
 
 
-            <div className="
-              grid
-              grid-cols-3
-              gap-3
-            ">
 
 
-              {times.map((item)=>(
 
 
-                <button
+{
+error && (
 
-                  key={item}
+<div
+className="
+mt-10
 
-                  type="button"
+rounded-3xl
 
+bg-red-500/10
 
-                  disabled={
-                    reservedTimes.includes(item)
-                  }
+border
+border-red-500/30
 
+p-6
 
-                  onClick={() =>
-                    setTime(item)
-                  }
+text-red-500
 
+"
+>
 
+{error}
 
-                  className={`
+</div>
 
-                    rounded-xl
 
-                    px-4
+)
 
-                    py-3
+}
 
-                    border
 
-                    transition-all
 
 
-                    ${
-                      time === item
 
-                      ?
 
-                      "bg-yellow-500 text-black border-yellow-500 scale-105"
 
-                      :
 
-                      "bg-neutral-900 border-neutral-700 hover:border-yellow-500"
 
-                    }
 
+<div
+className="
+mt-12
 
+rounded-4xl
 
-                    ${
-                      reservedTimes.includes(item)
+border
 
-                      ?
+border-neutral-200
+dark:border-neutral-800
 
-                      "opacity-30 cursor-not-allowed line-through"
 
-                      :
+bg-white/70
+dark:bg-neutral-950/70
 
-                      ""
 
-                    }
+backdrop-blur-xl
 
 
-                  `}
+shadow-2xl
 
 
-                >
+p-5
+sm:p-8
 
-                  {item}
+"
+>
 
 
-                </button>
 
+<div
+className="
+grid
+gap-6
+"
+>
 
-              ))}
 
 
-            </div>
 
 
-          </div>
 
 
 
+<div>
 
+<label
+className="
+block
+mb-3
 
+text-sm
+font-medium
 
+text-neutral-700
+dark:text-neutral-300
 
+"
+>
 
+Select date
 
-          <div>
+</label>
 
-            <label className="
-              block
-              mb-2
-              text-neutral-300
-            ">
-              Guests
-            </label>
 
+<div
+className="
+rounded-2xl
 
+border
+border-neutral-200
+dark:border-neutral-800
 
-            <select
+p-3
 
-              value={guests}
+bg-neutral-50
+dark:bg-neutral-900
 
-              onChange={(e)=>
-                setGuests(e.target.value)
-              }
+"
+>
 
+<Calendar
 
-              className="
-                w-full
-                rounded-xl
-                bg-neutral-900
-                border
-                border-neutral-700
-                px-4
-                py-3
-              "
+value={selectedDate}
 
-            >
+onChange={handleDateChange}
 
-              <option value="1">
-                1 person
-              </option>
+/>
 
-              <option value="2">
-                2 people
-              </option>
+</div>
 
-              <option value="3">
-                3 people
-              </option>
 
-              <option value="4">
-                4 people
-              </option>
+</div>
 
-              <option value="5">
-                5+ people
-              </option>
 
 
-            </select>
 
 
-          </div>
 
 
 
 
+<div>
 
 
+<label
+className="
+block
+mb-3
 
+text-sm
+font-medium
 
-          <input
+text-neutral-700
+dark:text-neutral-300
+"
+>
 
-            type="text"
+Available time
 
-            placeholder="Your name"
+</label>
 
-            value={name}
 
-            onChange={(e)=>
-              setName(e.target.value)
-            }
 
 
-            className="
-              w-full
-              rounded-xl
-              bg-neutral-900
-              border
-              border-neutral-700
-              px-4
-              py-3
-            "
+<div
+className="
+grid
 
-          />
+grid-cols-2
+sm:grid-cols-4
 
+gap-3
 
+"
+>
 
 
+{
+times.map(item=>(
 
 
-          <input
+<button
 
-            type="tel"
+key={item}
 
-            placeholder="+421..."
+type="button"
 
-            value={phone}
+disabled={
+reservedTimes.includes(item)
+}
 
-            onChange={(e)=>
-              setPhone(e.target.value)
-            }
 
+onClick={()=>
+setTime(item)
+}
 
-            className="
-              w-full
-              rounded-xl
-              bg-neutral-900
-              border
-              border-neutral-700
-              px-4
-              py-3
-            "
 
-          />
+className={`
 
+h-12
 
+rounded-2xl
 
+border
 
+text-sm
 
+font-medium
 
+transition-all
 
-          <input
 
-            type="email"
+${
+time===item
 
-            placeholder="email@example.com"
+?
 
-            value={email}
+"bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20 scale-105"
 
-            onChange={(e)=>
-              setEmail(e.target.value)
-            }
+:
 
+"bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-blue-500"
 
-            className="
-              w-full
-              rounded-xl
-              bg-neutral-900
-              border
-              border-neutral-700
-              px-4
-              py-3
-            "
+}
 
-          />
 
 
+${
+reservedTimes.includes(item)
 
+?
 
+"opacity-30 cursor-not-allowed line-through"
 
+:
 
+""
 
+}
 
-          <button
+`}
 
-            onClick={handleSubmit}
+>
 
-            disabled={loading}
+{item}
 
+</button>
 
-            className="
-              mt-6
-              rounded-full
-              bg-yellow-500
-              text-black
-              py-4
-              font-semibold
-              hover:scale-105
-              transition
-              disabled:opacity-50
-            "
 
-          >
+))
 
-            {loading
-              ? "Sending..."
-              : "Continue"
-            }
+}
 
 
-          </button>
+</div>
 
 
+</div>
 
 
 
-        </div>
 
 
 
-      </section>
 
 
-    </main>
 
-  );
+
+<select
+
+value={guests}
+
+onChange={(e)=>
+setGuests(e.target.value)
+}
+
+
+className="
+w-full
+
+rounded-2xl
+
+bg-neutral-100
+dark:bg-neutral-900
+
+border
+
+border-neutral-200
+dark:border-neutral-800
+
+px-5
+
+py-4
+
+outline-none
+
+focus:border-blue-500
+
+transition
+
+"
+
+>
+
+
+<option value="1">
+1 person
+</option>
+
+<option value="2">
+2 people
+</option>
+
+<option value="3">
+3 people
+</option>
+
+<option value="4">
+4 people
+</option>
+
+<option value="5">
+5+ people
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+
+
+
+<input
+
+type="text"
+
+placeholder="Your name"
+
+value={name}
+
+onChange={(e)=>
+setName(e.target.value)
+}
+
+
+className="
+booking-input
+"
+
+/>
+
+
+
+
+
+<input
+
+type="tel"
+
+placeholder="+421..."
+
+value={phone}
+
+onChange={(e)=>
+setPhone(e.target.value)
+}
+
+
+className="
+booking-input
+"
+
+/>
+
+
+
+
+
+
+<input
+
+type="email"
+
+placeholder="email@example.com"
+
+value={email}
+
+onChange={(e)=>
+setEmail(e.target.value)
+}
+
+
+className="
+booking-input
+"
+
+/>
+
+
+
+
+
+
+
+
+
+
+<button
+
+onClick={handleSubmit}
+
+disabled={loading}
+
+
+className="
+mt-4
+
+w-full
+
+rounded-2xl
+
+bg-blue-600
+
+text-white
+
+py-4
+
+font-semibold
+
+shadow-xl
+
+shadow-blue-500/20
+
+hover:bg-blue-700
+
+hover:scale-[1.02]
+
+transition-all
+
+disabled:opacity-50
+
+"
+
+>
+
+{
+loading
+
+?
+
+"Creating booking..."
+
+:
+
+"Confirm appointment"
+
+}
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</section>
+
+
+</main>
+
+
+);
 
 }
