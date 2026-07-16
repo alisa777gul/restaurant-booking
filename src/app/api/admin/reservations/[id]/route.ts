@@ -1,7 +1,5 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-
-
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
   request: Request,
@@ -11,61 +9,40 @@ export async function PATCH(
     params: Promise<{
       id: string;
     }>;
-  }
+  },
 ) {
-
-
   try {
-
-
     const body = await request.json();
-
 
     const { id } = await params;
 
+    const reservation = await prisma.reservation.update({
+      where: {
+        id: Number(id),
+      },
 
+      data: {
+        status: body.status,
+      },
 
-    const reservation =
-      await prisma.reservation.update({
+      include: {
+        service: true,
+      },
+    });
 
-        where:{
-          id:Number(id),
-        },
-
-
-        data:{
-          status: body.status,
-        },
-
-
-      });
-
-
-
-    return NextResponse.json(
-      reservation
-    );
-
-
-
-  } catch(error) {
-
-
+    return NextResponse.json(reservation);
+  } catch (error) {
     console.error(error);
 
-
     return NextResponse.json(
       {
-        error:"Update failed"
+        error: 'Update failed',
       },
       {
-        status:500
-      }
+        status: 500,
+      },
     );
-
-
   }
-
 }
 export async function DELETE(
   request: Request,
@@ -73,50 +50,30 @@ export async function DELETE(
     params,
   }: {
     params: Promise<{
-      id:string;
+      id: string;
     }>;
-  }
+  },
 ) {
-
   try {
-
-
     const { id } = await params;
 
+    const reservation = await prisma.reservation.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
-
-    const reservation =
-      await prisma.reservation.delete({
-
-        where:{
-          id:Number(id),
-        },
-
-      });
-
-
-
-    return Response.json(
-      reservation
-    );
-
-
-  } catch(error) {
-
-
+    return Response.json(reservation);
+  } catch (error) {
     console.error(error);
 
-
     return Response.json(
       {
-        error:"Delete failed"
+        error: 'Delete failed',
       },
       {
-        status:500
-      }
+        status: 500,
+      },
     );
-
-
   }
-
 }

@@ -1,53 +1,30 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
+export async function POST(request: Request) {
+  try {
+    const { date, time } = await request.json();
 
-export async function POST(
-request:Request
-){
+    const reservation = await prisma.reservation.findFirst({
+      where: {
+        date,
+        time,
+      },
+    });
 
-try{
+    return NextResponse.json({
+      available: !reservation,
+    });
+  } catch (error) {
+    console.error(error);
 
-const {
-date,
-time
-}=await request.json();
-
-
-const reservation =
-await prisma.reservation.findFirst({
-
-where:{
-date,
-time
-}
-
-});
-
-
-return NextResponse.json({
-
-available: !reservation
-
-});
-
-
-}
-catch(error){
-
-console.error(error);
-
-
-return NextResponse.json(
-{
-error:"Server error"
-},
-{
-status:500
-}
-);
-
-
-}
-
+    return NextResponse.json(
+      {
+        error: 'Server error',
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }

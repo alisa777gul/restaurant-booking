@@ -1,193 +1,107 @@
-"use client";
+'use client';
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from 'react';
 
-import StatCard from "@/components/admin/StatCard";
+import StatCard from '@/components/admin/StatCard';
 
-
+type Service = {
+  id: number;
+  name: string;
+  duration: number;
+  price: number | null;
+};
 
 type Reservation = {
-  id:number;
-  name:string;
-  time:string;
-  guests:string;
-  status:string;
+  id: number;
+  name: string;
+  time: string;
+  guests: string;
+  status: string;
+  serviceId: number | null;
+  service: Service | null;
 };
-
-
 
 type Stats = {
-  total:number;
-  pending:number;
-  confirmed:number;
-  today:number;
+  total: number;
+  pending: number;
+  confirmed: number;
+  today: number;
 };
 
-
-
-
-export default function DashboardPage(){
-
-
-const [stats,setStats] = useState<Stats>({
-  total:0,
-  pending:0,
-  confirmed:0,
-  today:0,
-});
-
-
-const [reservations,setReservations] =
-useState<Reservation[]>([]);
-
-
-const [loading,setLoading] =
-useState(true);
-
-
-
-
-
-useEffect(()=>{
-
-
-const controller = new AbortController();
-
-
-
-async function loadDashboard(){
-
-
-try{
-
-
-const response = await fetch(
-"/api/admin/dashboard",
-{
-signal:controller.signal,
-}
-);
-
-
-
-const data = await response.json();
-
-
-
-if(!response.ok){
-
-throw new Error(
-data.error ||
-"Failed to load dashboard"
-);
-
-}
-
-
-
-setStats(
-data.stats ?? {
-total:0,
-pending:0,
-confirmed:0,
-today:0,
-}
-);
-
-
-
-setReservations(
-data.todayReservations ?? []
-);
-
-
-
-}
-
-catch(error){
-
-
-if(
-error instanceof DOMException &&
-error.name==="AbortError"
-){
-return;
-}
-
-
-console.error(
-"Dashboard error:",
-error
-);
-
-
-}
-
-
-finally{
-
-setLoading(false);
-
-}
-
-
-}
-
-
-
-loadDashboard();
-
-
-
-return ()=>controller.abort();
-
-
-},[]);
-
-
-
-
-
-if(loading){
-
-return (
-
-<div
-className="
+export default function DashboardPage() {
+  const [stats, setStats] = useState<Stats>({
+    total: 0,
+    pending: 0,
+    confirmed: 0,
+    today: 0,
+  });
+
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/admin/dashboard', {
+          signal: controller.signal,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to load dashboard');
+        }
+
+        setStats(
+          data.stats ?? {
+            total: 0,
+            pending: 0,
+            confirmed: 0,
+            today: 0,
+          },
+        );
+
+        setReservations(data.todayReservations ?? []);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        console.error('Dashboard error:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboard();
+
+    return () => controller.abort();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        className="
 min-h-80
 flex
 items-center
 justify-center
 text-neutral-500
 "
->
+      >
+        Loading dashboard...
+      </div>
+    );
+  }
 
-Loading dashboard...
-
-</div>
-
-);
-
-}
-
-
-
-
-
-return (
-
-<main className="w-full">
-
-
-
-<section className="mb-10">
-
-
-<div
-className="
+  return (
+    <main className="w-full">
+      <section className="mb-10">
+        <div
+          className="
 inline-flex
 items-center
 rounded-full
@@ -200,101 +114,53 @@ text-sm
 font-medium
 mb-5
 "
->
+        >
+          ✨ Overview
+        </div>
 
-✨ Overview
-
-</div>
-
-
-
-<h1
-className="
+        <h1
+          className="
 text-3xl
 sm:text-4xl
 lg:text-5xl
 font-bold
 tracking-tight
 "
->
+        >
+          Dashboard
+        </h1>
 
-Dashboard
-
-</h1>
-
-
-
-<p
-className="
+        <p
+          className="
 mt-3
 text-neutral-500
 dark:text-neutral-400
 "
->
+        >
+          Manage your bookings and business activity
+        </p>
+      </section>
 
-Manage your bookings and business activity
-
-</p>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<div
-className="
+      <div
+        className="
 grid
 grid-cols-1
 sm:grid-cols-2
 xl:grid-cols-4
 gap-5
 "
->
+      >
+        <StatCard title="Today" value={stats.today} />
 
+        <StatCard title="All reservations" value={stats.total} />
 
-<StatCard
-title="Today"
-value={stats.today}
-/>
+        <StatCard title="Pending" value={stats.pending} />
 
+        <StatCard title="Confirmed" value={stats.confirmed} />
+      </div>
 
-<StatCard
-title="All reservations"
-value={stats.total}
-/>
-
-
-<StatCard
-title="Pending"
-value={stats.pending}
-/>
-
-
-<StatCard
-title="Confirmed"
-value={stats.confirmed}
-/>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<section
-
-className="
+      <section
+        className="
 mt-10
 
 rounded-3xl
@@ -314,54 +180,39 @@ p-5
 sm:p-7
 
 "
-
->
-
-
-<div
-className="
+      >
+        <div
+          className="
 flex
 items-center
 justify-between
 mb-6
 "
->
-
-
-<div>
-
-
-<h2
-className="
+        >
+          <div>
+            <h2
+              className="
 text-xl
 sm:text-2xl
 font-bold
 "
->
+            >
+              Today&apos;s reservations
+            </h2>
 
-Today&apos;s reservations
-
-</h2>
-
-
-<p
-className="
+            <p
+              className="
 text-sm
 text-neutral-500
 mt-1
 "
->
+            >
+              Upcoming bookings
+            </p>
+          </div>
 
-Upcoming bookings
-
-</p>
-
-
-</div>
-
-
-<div
-className="
+          <div
+            className="
 w-10
 h-10
 rounded-xl
@@ -372,27 +223,14 @@ items-center
 justify-center
 font-bold
 "
->
+          >
+            {reservations.length}
+          </div>
+        </div>
 
-{reservations.length}
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-{
-reservations.length===0 ? (
-
-
-<div
-className="
+        {reservations.length === 0 ? (
+          <div
+            className="
 rounded-2xl
 border
 border-dashed
@@ -402,32 +240,16 @@ py-14
 text-center
 text-neutral-500
 "
->
+          >
+            No reservations today
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reservations.map((item) => (
+              <div
+                key={item.id}
 
-No reservations today
-
-</div>
-
-
-)
-
-:
-
-(
-
-
-<div className="space-y-4">
-
-
-{
-reservations.map(item=>(
-
-
-<div
-
-key={item.id}
-
-className="
+                className="
 group
 
 flex
@@ -463,22 +285,16 @@ hover:shadow-lg
 transition-all
 
 "
-
->
-
-
-<div
-className="
+              >
+                <div
+                  className="
 flex
 items-center
 gap-4
 "
->
-
-
-<div
-
-className="
+                >
+                  <div
+                    className="
 w-12
 h-12
 rounded-2xl
@@ -496,63 +312,35 @@ justify-center
 font-bold
 
 "
+                  >
+                    {item.name.charAt(0).toUpperCase()}
+                  </div>
 
->
-
-{
-item.name
-.charAt(0)
-.toUpperCase()
-}
-
-</div>
-
-
-
-
-
-<div>
-
-
-<p
-className="
+                  <div>
+                    <p
+                      className="
 font-bold
 text-lg
 "
->
+                    >
+                      {item.name}
+                    </p>
 
-{item.name}
-
-</p>
-
-
-<p
-className="
+                    <p
+                      className="
 text-sm
 text-neutral-500
 mt-1
 "
->
+                    >
+                      🕒 {item.time}
+                      {item.service ? ` • ${item.service.name}` : ''}
+                    </p>
+                  </div>
+                </div>
 
-🕒 {item.time}
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-className="
+                <div
+                  className="
 flex
 items-center
 justify-between
@@ -560,26 +348,18 @@ sm:flex-col
 sm:items-end
 gap-3
 "
->
-
-
-<p
-className="
+                >
+                  <p
+                    className="
 text-sm
 text-neutral-500
 "
->
+                  >
+                    {item.guests} guests
+                  </p>
 
-{item.guests} guests
-
-</p>
-
-
-
-
-<span
-
-className={`
+                  <span
+                    className={`
 
 px-4
 py-1.5
@@ -592,67 +372,23 @@ font-semibold
 
 
 ${
-item.status==="CONFIRMED"
-
-?
-
-"bg-green-500/10 text-green-600 dark:text-green-400"
-
-:
-
-item.status==="CANCELLED"
-
-?
-
-"bg-red-500/10 text-red-600 dark:text-red-400"
-
-:
-
-"bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
-
+  item.status === 'CONFIRMED'
+    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+    : item.status === 'CANCELLED'
+      ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+      : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
 }
 
 `}
-
->
-
-{item.status}
-
-</span>
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
-
-)
-
-}
-
-
-
-
-</section>
-
-
-
-
-
-</main>
-
-);
-
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
 }

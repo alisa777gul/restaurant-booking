@@ -77,6 +77,34 @@ model WorkingHour {
   updatedAt DateTime @updatedAt
 }
 
+model DateOverride {
+  id Int @id @default(autoincrement())
+
+  // The specific calendar date in "YYYY-MM-DD" format.
+  date String @unique
+
+  // When true, the restaurant is fully closed on this date and no
+  // time slots are generated, regardless of the weekly working hours.
+  closed Boolean @default(false)
+
+  // Optional custom opening/closing time for this date. When provided
+  // (and closed = false) these override the weekly WorkingHour for the
+  // weekday, which enables "special openings".
+  open String?
+
+  close String?
+
+  // Optional custom slot duration (minutes) for this date.
+  slotDuration Int?
+
+  // Optional note shown in the admin panel (e.g. "Public holiday").
+  reason String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
 model RestaurantSettings {
   id Int @id @default(autoincrement())
 

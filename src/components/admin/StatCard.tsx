@@ -4,18 +4,9 @@ type Props = {
   icon?: React.ReactNode;
 };
 
-
-export default function StatCard({
-  title,
-  value,
-  icon,
-}: Props) {
-
-
+export default function StatCard({ title, value, icon }: Props) {
   return (
-
     <div
-
       className="
       group
 
@@ -43,12 +34,8 @@ export default function StatCard({
       hover:-translate-y-1
 
       "
-
     >
-
-
       {/* glow */}
-
 
       <div
         className="
@@ -72,10 +59,6 @@ export default function StatCard({
         "
       />
 
-
-
-
-
       <div
         className="
         relative
@@ -86,14 +69,8 @@ export default function StatCard({
 
         "
       >
-
-
-
         <div>
-
-
           <p
-
             className="
             text-sm
 
@@ -102,18 +79,11 @@ export default function StatCard({
             font-medium
 
             "
-
           >
-
             {title}
-
           </p>
 
-
-
-
           <p
-
             className="
             mt-3
 
@@ -128,27 +98,14 @@ export default function StatCard({
             dark:text-white
 
             "
-
           >
-
             {value}
-
           </p>
-
-
-
         </div>
 
-
-
-
-
-        {
-          icon && (
-
-            <div
-
-              className="
+        {icon && (
+          <div
+            className="
               w-12
               h-12
 
@@ -169,30 +126,15 @@ export default function StatCard({
               transition
 
               "
-
-            >
-
-              {icon}
-
-            </div>
-
-          )
-        }
-
-
-
+          >
+            {icon}
+          </div>
+        )}
       </div>
-
-
-
-
-
 
       {/* bottom line */}
 
-
       <div
-
         className="
         mt-6
 
@@ -205,9 +147,7 @@ export default function StatCard({
         text-neutral-500
 
         "
-
       >
-
         <span
           className="
           w-2
@@ -218,17 +158,8 @@ export default function StatCard({
           bg-green-500
           "
         />
-
         Updated live
-
-
       </div>
-
-
-
-
     </div>
-
   );
-
 }

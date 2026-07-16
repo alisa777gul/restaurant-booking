@@ -1,155 +1,92 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
-import "./calendar.css";
+import { useMemo, useState } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
+import './calendar.css';
 
-import TimeSlots from "@/components/admin/TimeSlots";
-import ReservationModal from "@/components/admin/ReservationModal";
+import TimeSlots from '@/components/admin/TimeSlots';
+import ReservationModal from '@/components/admin/ReservationModal';
 
-import {
-  CalendarDays,
-  Clock,
-  Users,
-  Phone,
-  Mail,
-  Sparkles,
-} from "lucide-react";
+import { CalendarDays, Clock, Users, Phone, Mail, Sparkles } from 'lucide-react';
 
+type Service = {
+  id: number;
+  name: string;
+  duration: number;
+  price: number | null;
+};
 
 type Reservation = {
-  id:number;
-  name:string;
-  phone:string;
-  email:string;
-  date:string;
-  time:string;
-  guests:string;
-  status:string;
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: string;
+  status: string;
+  serviceId: number | null;
+  service: Service | null;
 };
-
 
 type Props = {
-  reservations:Reservation[];
+  reservations: Reservation[];
 
-  onUpdate:(id:number,status:string)=>void;
+  onUpdate: (id: number, status: string) => void;
 
-  onDelete:(id:number)=>void;
+  onDelete: (id: number) => void;
 };
 
+const formatDate = (date: Date) => {
+  return (
+    `${date.getFullYear()}-` +
+    `${String(date.getMonth() + 1).padStart(2, '0')}-` +
+    `${String(date.getDate()).padStart(2, '0')}`
+  );
+};
 
+const normalizeDate = (value: string) => {
+  return value?.split('T')[0] ?? '';
+};
 
-const formatDate = (date:Date)=>{
+export default function AdminCalendar({ reservations = [], onUpdate, onDelete }: Props) {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
+  const selectedDay = formatDate(selectedDate);
+
+  const dayReservations = useMemo(() => {
+    return reservations
+
+      .filter((item) => normalizeDate(item.date) === selectedDay)
+
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [reservations, selectedDay]);
+
+  const bookedDays = useMemo(() => {
+    return reservations
+
+      .filter((item) => item.date)
+
+      .map((item) => new Date(normalizeDate(item.date)));
+  }, [reservations]);
 
   return (
-    `${date.getFullYear()}-`+
-    `${String(date.getMonth()+1).padStart(2,"0")}-`+
-    `${String(date.getDate()).padStart(2,"0")}`
-  );
-
-};
-
-
-
-const normalizeDate=(value:string)=>{
-
-  return value?.split("T")[0] ?? "";
-
-};
-
-
-
-
-
-export default function AdminCalendar({
-  reservations=[],
-  onUpdate,
-  onDelete,
-}:Props){
-
-
-const [selectedDate,setSelectedDate]=
-useState(new Date());
-
-
-const [selectedReservation,setSelectedReservation]=
-useState<Reservation|null>(null);
-
-
-
-const selectedDay=formatDate(selectedDate);
-
-
-
-const dayReservations=useMemo(()=>{
-
-
-return reservations
-
-.filter(
-(item)=>
-normalizeDate(item.date)===selectedDay
-)
-
-.sort(
-(a,b)=>
-a.time.localeCompare(b.time)
-);
-
-
-},[
-reservations,
-selectedDay
-]);
-
-
-
-
-
-const bookedDays=useMemo(()=>{
-
-
-return reservations
-
-.filter(
-item=>item.date
-)
-
-.map(
-item=>
-new Date(normalizeDate(item.date))
-);
-
-
-},[
-reservations
-]);
-
-
-
-
-
-
-return (
-
-<div
-className="
+    <div
+      className="
 grid
 grid-cols-1
 xl:grid-cols-[360px_1fr]
 gap-6
 w-full
 "
->
+    >
+      {/* LEFT */}
 
-
-
-{/* LEFT */}
-
-
-<section
-className="
+      <section
+        className="
 relative
 overflow-hidden
 
@@ -167,11 +104,9 @@ shadow-xl
 p-5
 sm:p-6
 "
->
-
-
-<div
-className="
+      >
+        <div
+          className="
 absolute
 top-0
 right-0
@@ -185,23 +120,19 @@ blur-3xl
 
 rounded-full
 "
-/>
+        />
 
-
-
-<div
-className="
+        <div
+          className="
 relative
 flex
 items-center
 gap-4
 mb-6
 "
->
-
-
-<div
-className="
+        >
+          <div
+            className="
 w-12
 h-12
 
@@ -215,46 +146,33 @@ flex
 items-center
 justify-center
 "
->
+          >
+            <CalendarDays size={24} />
+          </div>
 
-<CalendarDays size={24}/>
-
-</div>
-
-
-
-<div>
-
-<h2
-className="
+          <div>
+            <h2
+              className="
 font-bold
 text-xl
 "
->
-Calendar
-</h2>
+            >
+              Calendar
+            </h2>
 
-
-<p
-className="
+            <p
+              className="
 text-sm
 text-neutral-500
 "
->
-Manage bookings
-</p>
+            >
+              Manage bookings
+            </p>
+          </div>
+        </div>
 
-</div>
-
-
-</div>
-
-
-
-
-
-<div
-className="
+        <div
+          className="
 rounded-2xl
 
 bg-neutral-50
@@ -266,45 +184,28 @@ dark:border-neutral-800
 
 p-3
 "
->
+        >
+          <DayPicker
+            mode="single"
 
+            selected={selectedDate}
 
-<DayPicker
+            onSelect={(date) => {
+              if (date) setSelectedDate(date);
+            }}
 
-mode="single"
+            modifiers={{
+              booked: bookedDays,
+            }}
 
-selected={selectedDate}
+            modifiersClassNames={{
+              booked: 'booked-day',
+            }}
+          />
+        </div>
 
-onSelect={(date)=>{
-
-if(date)
-setSelectedDate(date);
-
-}}
-
-
-modifiers={{
-booked:bookedDays
-}}
-
-
-modifiersClassNames={{
-booked:"booked-day"
-}}
-
-
-/>
-
-
-</div>
-
-
-
-
-
-
-<div
-className="
+        <div
+          className="
 mt-5
 
 rounded-2xl
@@ -318,20 +219,16 @@ dark:bg-neutral-900
 
 p-4
 "
->
-
-
-<div
-className="
+        >
+          <div
+            className="
 flex
 items-center
 gap-3
 "
->
-
-
-<div
-className="
+          >
+            <div
+              className="
 p-2
 
 rounded-xl
@@ -340,61 +237,39 @@ bg-yellow-500/10
 
 text-yellow-500
 "
->
+            >
+              <Sparkles size={18} />
+            </div>
 
-<Sparkles size={18}/>
-
-</div>
-
-
-<div>
-
-
-<p
-className="
+            <div>
+              <p
+                className="
 text-xs
 text-neutral-500
 "
->
-Selected date
-</p>
+              >
+                Selected date
+              </p>
 
-
-<p
-className="
+              <p
+                className="
 font-semibold
 "
->
+              >
+                {selectedDate.toLocaleDateString('en-US', {
+                  day: 'numeric',
+                  month: 'short',
+                  weekday: 'short',
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* RIGHT */}
 
-{
-selectedDate.toLocaleDateString(
-"en-US",
-{
-day:"numeric",
-month:"short",
-weekday:"short"
-}
-)
-}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-</section>{/* RIGHT */}
-
-
-<section
-className="
+      <section
+        className="
 rounded-3xl
 
 border
@@ -409,33 +284,26 @@ shadow-xl
 p-5
 sm:p-6
 "
->
-
-
-<div
-className="
+      >
+        <div
+          className="
 flex
 flex-col
 gap-6
 "
->
-
-
-
-<div>
-
-<p
-className="
+        >
+          <div>
+            <p
+              className="
 text-sm
 text-neutral-500
 "
->
-Reservations
-</p>
+            >
+              Reservations
+            </p>
 
-
-<h1
-className="
+            <h1
+              className="
 mt-1
 
 text-2xl
@@ -445,26 +313,17 @@ font-bold
 
 tracking-tight
 "
->
+            >
+              {selectedDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </h1>
 
-{
-selectedDate.toLocaleDateString(
-"en-US",
-{
-weekday:"long",
-day:"numeric",
-month:"long",
-year:"numeric"
-}
-)
-}
-
-</h1>
-
-
-
-<div
-className="
+            <div
+              className="
 mt-3
 
 inline-flex
@@ -486,51 +345,24 @@ text-sm
 
 font-medium
 "
->
+            >
+              <CalendarDays size={15} />
 
-<CalendarDays size={15}/>
+              <span>{dayReservations.length} bookings</span>
+            </div>
+          </div>
 
-  <span>
-    {dayReservations.length} bookings
-  </span>
+          {/* TIME SLOTS */}
 
-</div>
+          <div>
+            <TimeSlots date={selectedDay} />
+          </div>
 
+          {/* EMPTY */}
 
-</div>
-
-
-
-
-
-{/* TIME SLOTS */}
-
-
-<div>
-
-<TimeSlots
-date={selectedDay}
-/>
-
-</div>
-
-
-
-
-
-
-
-{/* EMPTY */}
-
-
-
-{
-dayReservations.length===0 ? (
-
-
-
-<div
-className="
+          {dayReservations.length === 0 ? (
+            <div
+              className="
 min-h-75
 
 rounded-3xl
@@ -554,11 +386,9 @@ justify-center
 
 text-neutral-500
 "
->
-
-
-<div
-className="
+            >
+              <div
+                className="
 w-16
 h-16
 
@@ -573,69 +403,42 @@ justify-center
 
 mb-4
 "
->
+              >
+                <CalendarDays size={30} />
+              </div>
 
-<CalendarDays size={30}/>
-
-</div>
-
-
-
-<p
-className="
+              <p
+                className="
 font-semibold
 "
->
-No reservations
-</p>
+              >
+                No reservations
+              </p>
 
-
-<p
-className="
+              <p
+                className="
 text-sm
 mt-1
 "
->
-This day is available
-</p>
-
-
-
-</div>
-
-
-
-)
-
-:
-
-
-
-(
-
-
-
-<div
-className="
+              >
+                This day is available
+              </p>
+            </div>
+          ) : (
+            <div
+              className="
 space-y-4
 "
->
+            >
+              {dayReservations.map((item) => (
+                <button
+                  key={item.id}
 
+                  type="button"
 
-{
-dayReservations.map((item)=>(
+                  onClick={() => setSelectedReservation(item)}
 
-
-<button
-
-key={item.id}
-
-type="button"
-
-onClick={()=>setSelectedReservation(item)}
-
-
-className="
+                  className="
 group
 
 w-full
@@ -668,12 +471,9 @@ transition-all
 
 duration-300
 "
-
->
-
-
-<div
-className="
+                >
+                  <div
+                    className="
 flex
 
 flex-col
@@ -686,19 +486,15 @@ sm:justify-between
 
 gap-5
 "
->
-
-
-<div
-className="
+                  >
+                    <div
+                      className="
 flex
 gap-4
 "
->
-
-
-<div
-className="
+                    >
+                      <div
+                        className="
 w-12
 h-12
 
@@ -718,24 +514,13 @@ font-bold
 
 text-lg
 "
->
+                      >
+                        {item.name.charAt(0).toUpperCase()}
+                      </div>
 
-{
-item.name
-.charAt(0)
-.toUpperCase()
-}
-
-</div>
-
-
-
-
-<div>
-
-
-<h3
-className="
+                      <div>
+                        <h3
+                          className="
 font-bold
 
 text-lg
@@ -744,17 +529,12 @@ group-hover:text-blue-500
 
 transition
 "
->
+                        >
+                          {item.name}
+                        </h3>
 
-{item.name}
-
-</h3>
-
-
-
-
-<div
-className="
+                        <div
+                          className="
 mt-3
 
 flex
@@ -767,57 +547,50 @@ text-sm
 
 text-neutral-500
 "
->
-
-
-<span
-className="
+                        >
+                          <span
+                            className="
 flex
 items-center
 gap-2
 "
->
+                          >
+                            <Clock size={15} />
 
-<Clock size={15}/>
+                            {item.time}
+                          </span>
 
-{item.time}
-
-</span>
-
-
-
-<span
-className="
+                          <span
+                            className="
 flex
 items-center
 gap-2
 "
->
+                          >
+                            <Users size={15} />
 
-<Users size={15}/>
+                            {item.guests}
+                          </span>
 
-{item.guests}
+                          {item.service && (
+                            <span
+                              className="
+flex
+items-center
+gap-2
+"
+                            >
+                              <Sparkles size={15} />
 
-</span>
+                              {item.service.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-<span
-className={`
+                    <span
+                      className={`
 
 px-4
 py-2
@@ -832,49 +605,22 @@ w-fit
 
 
 ${
-item.status==="CONFIRMED"
-
-?
-
-"bg-green-500/10 text-green-500"
-
-:
-
-item.status==="CANCELLED"
-
-?
-
-"bg-red-500/10 text-red-500"
-
-:
-
-"bg-yellow-500/10 text-yellow-500"
-
+  item.status === 'CONFIRMED'
+    ? 'bg-green-500/10 text-green-500'
+    : item.status === 'CANCELLED'
+      ? 'bg-red-500/10 text-red-500'
+      : 'bg-yellow-500/10 text-yellow-500'
 }
 
 
 `}
->
+                    >
+                      {item.status}
+                    </span>
+                  </div>
 
-
-{item.status}
-
-
-</span>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-className="
+                  <div
+                    className="
 mt-5
 
 pt-4
@@ -894,133 +640,61 @@ text-sm
 
 text-neutral-500
 "
->
-
-
-<span
-className="
+                  >
+                    <span
+                      className="
 flex
 items-center
 gap-3
 break-all
 "
->
+                    >
+                      <Phone size={15} />
 
-<Phone size={15}/>
+                      {item.phone}
+                    </span>
 
-{item.phone}
-
-</span>
-
-
-
-<span
-className="
+                    <span
+                      className="
 flex
 items-center
 gap-3
 break-all
 "
->
-
-<Mail size={15}/>
-
-{item.email}
-
-</span>
-
-
-
-</div>
-
-
-
-
-
-</button>
-
-
-))
-}
-
-
-
-</div>
-
-
-)
-
-}
-
-
-</div>
-
-
-</section>
-
-
-
-
-{
-selectedReservation && (
-
-
-<ReservationModal
-
-
-reservation={selectedReservation}
-
-
-
-onClose={()=>{
-
-setSelectedReservation(null);
-
-}}
-
-
-
-onUpdate={(id,status)=>{
-
-
-onUpdate(
-id,
-status
-);
-
-
-setSelectedReservation(null);
-
-
-}}
-
-
-
-
-onDelete={(id)=>{
-
-
-onDelete(id);
-
-
-setSelectedReservation(null);
-
-
-}}
-
-
-
-/>
-
-
-)
-
-}
-
-
-
-</div>
-
-);
-
+                    >
+                      <Mail size={15} />
+
+                      {item.email}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {selectedReservation && (
+        <ReservationModal
+          reservation={selectedReservation}
+
+          onClose={() => {
+            setSelectedReservation(null);
+          }}
+
+          onUpdate={(id, status) => {
+            onUpdate(id, status);
+
+            setSelectedReservation(null);
+          }}
+
+          onDelete={(id) => {
+            onDelete(id);
+
+            setSelectedReservation(null);
+          }}
+        />
+      )}
+    </div>
+  );
 }

@@ -1,19 +1,11 @@
-"use client";
+'use client';
 
-import { Menu } from "lucide-react";
+import { Menu } from 'lucide-react';
 
-
-export default function Topbar({
-setOpen,
-}:{
-setOpen:(value:boolean)=>void;
-}) {
-
-
-return (
-
-<header
-className="
+export default function Topbar({ setOpen }: { setOpen: (value: boolean) => void }) {
+  return (
+    <header
+      className="
 sticky
 top-0
 z-30
@@ -38,18 +30,12 @@ dark:bg-neutral-950/80
 
 backdrop-blur-xl
 "
->
+    >
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setOpen(true)}
 
-
-
-<div className="flex items-center gap-4">
-
-
-<button
-
-onClick={()=>setOpen(true)}
-
-className="
+          className="
 lg:hidden
 
 w-10
@@ -71,19 +57,13 @@ dark:border-neutral-800
 shadow-sm
 
 "
+        >
+          <Menu size={22} />
+        </button>
 
->
-
-<Menu size={22}/>
-
-</button>
-
-
-
-<div>
-
-<h1
-className="
+        <div>
+          <h1
+            className="
 text-lg
 sm:text-2xl
 
@@ -92,37 +72,27 @@ font-bold
 text-neutral-900
 dark:text-white
 "
->
-BookFlow
-</h1>
+          >
+            BookFlow
+          </h1>
 
-
-<p
-className="
+          <p
+            className="
 hidden
 sm:block
 
 text-sm
 text-neutral-500
 "
->
-Booking management platform
-</p>
+          >
+            Booking management platform
+          </p>
+        </div>
+      </div>
 
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div>
-
-<div
-className="
+      <div>
+        <div
+          className="
 w-9
 h-9
 
@@ -142,18 +112,10 @@ justify-center
 text-white
 font-bold
 "
->
-A
-</div>
-
-
-</div>
-
-
-
-</header>
-
-
-);
-
+        >
+          A
+        </div>
+      </div>
+    </header>
+  );
 }

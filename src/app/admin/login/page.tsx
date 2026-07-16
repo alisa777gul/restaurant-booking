@@ -1,68 +1,49 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Lock, Mail, Sparkles } from "lucide-react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Lock, Mail, Sparkles } from 'lucide-react';
 
+export default function AdminLogin() {
+  const router = useRouter();
 
-export default function AdminLogin(){
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const router = useRouter();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
+  async function login() {
+    setLoading(true);
+    setError('');
 
-const [error,setError]=useState("");
-const [loading,setLoading]=useState(false);
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
 
+    const data = await response.json();
 
+    if (!response.ok) {
+      setError(data.error);
 
-async function login(){
+      setLoading(false);
 
-setLoading(true);
-setError("");
+      return;
+    }
 
-const response = await fetch(
-"/api/admin/login",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email,
-password
-})
-}
-);
+    router.push('/admin/dashboard');
+  }
 
-
-const data = await response.json();
-
-
-if(!response.ok){
-
-setError(data.error);
-
-setLoading(false);
-
-return;
-
-}
-
-
-router.push("/admin/dashboard");
-
-}
-
-
-
-
-return (
-
-<main
-
-className="
+  return (
+    <main
+      className="
 min-h-screen
 
 bg-linear-to-b
@@ -82,13 +63,9 @@ relative
 overflow-hidden
 
 "
-
->
-
-
-<div
-
-className="
+    >
+      <div
+        className="
 absolute
 top-20
 right-20
@@ -103,28 +80,19 @@ blur-3xl
 rounded-full
 
 "
+      />
 
-/>
-
-
-
-<div
-
-className="
+      <div
+        className="
 relative
 
 w-full
 max-w-md
 
 "
-
->
-
-
-
-<div
-
-className="
+      >
+        <div
+          className="
 bg-white/80
 
 dark:bg-neutral-950/80
@@ -143,26 +111,17 @@ shadow-2xl
 p-8
 
 "
-
->
-
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 flex
 justify-center
 mb-6
 
 "
-
->
-
-
-<div
-
-className="
+          >
+            <div
+              className="
 w-16
 h-16
 
@@ -179,23 +138,13 @@ items-center
 justify-center
 
 "
+            >
+              <Sparkles size={32} />
+            </div>
+          </div>
 
->
-
-<Sparkles size={32}/>
-
-</div>
-
-
-</div>
-
-
-
-
-
-<h1
-
-className="
+          <h1
+            className="
 text-3xl
 
 font-bold
@@ -205,18 +154,12 @@ text-center
 tracking-tight
 
 "
+          >
+            BookFlow Admin
+          </h1>
 
->
-
-BookFlow Admin
-
-</h1>
-
-
-
-<p
-
-className="
+          <p
+            className="
 text-neutral-500
 
 text-center
@@ -225,23 +168,13 @@ mt-2
 mb-8
 
 "
+          >
+            Manage your bookings easily
+          </p>
 
->
-
-Manage your bookings easily
-
-</p>
-
-
-
-
-
-{
-error && (
-
-<div
-
-className="
+          {error && (
+            <div
+              className="
 mb-5
 
 rounded-xl
@@ -259,33 +192,17 @@ text-red-500
 text-sm
 
 "
+            >
+              {error}
+            </div>
+          )}
 
->
+          <div className="space-y-4">
+            <div className="relative">
+              <Mail
+                size={18}
 
-{error}
-
-</div>
-
-)
-
-}
-
-
-
-
-
-<div className="space-y-4">
-
-
-
-<div className="relative">
-
-
-<Mail
-
-size={18}
-
-className="
+                className="
 absolute
 left-4
 top-1/2
@@ -294,21 +211,18 @@ top-1/2
 text-neutral-400
 
 "
+              />
 
-/>
+              <input
+                type="email"
 
+                placeholder="Email"
 
-<input
+                value={email}
 
-type="email"
+                onChange={(e) => setEmail(e.target.value)}
 
-placeholder="Email"
-
-value={email}
-
-onChange={(e)=>setEmail(e.target.value)}
-
-className="
+                className="
 w-full
 
 rounded-xl
@@ -334,25 +248,14 @@ focus:border-blue-500
 transition
 
 "
+              />
+            </div>
 
-/>
+            <div className="relative">
+              <Lock
+                size={18}
 
-
-</div>
-
-
-
-
-
-
-<div className="relative">
-
-
-<Lock
-
-size={18}
-
-className="
+                className="
 absolute
 left-4
 top-1/2
@@ -361,22 +264,18 @@ top-1/2
 text-neutral-400
 
 "
+              />
 
-/>
+              <input
+                type="password"
 
+                placeholder="Password"
 
+                value={password}
 
-<input
+                onChange={(e) => setPassword(e.target.value)}
 
-type="password"
-
-placeholder="Password"
-
-value={password}
-
-onChange={(e)=>setPassword(e.target.value)}
-
-className="
+                className="
 w-full
 
 rounded-xl
@@ -402,29 +301,16 @@ focus:border-blue-500
 transition
 
 "
+              />
+            </div>
+          </div>
 
-/>
+          <button
+            onClick={login}
 
+            disabled={loading}
 
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<button
-
-onClick={login}
-
-disabled={loading}
-
-className="
+            className="
 w-full
 
 mt-6
@@ -452,33 +338,13 @@ transition
 disabled:opacity-50
 
 "
+          >
+            {loading ? 'Signing in...' : 'Login'}
+          </button>
+        </div>
 
->
-
-{
-
-loading
-?
-"Signing in..."
-:
-"Login"
-
-}
-
-
-</button>
-
-
-
-
-</div>
-
-
-
-
-<p
-
-className="
+        <p
+          className="
 text-center
 
 text-sm
@@ -488,21 +354,10 @@ text-neutral-500
 mt-6
 
 "
-
->
-
-BookFlow booking platform
-
-</p>
-
-
-
-</div>
-
-
-
-</main>
-
-);
-
+        >
+          BookFlow booking platform
+        </p>
+      </div>
+    </main>
+  );
 }

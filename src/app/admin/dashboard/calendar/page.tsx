@@ -1,251 +1,109 @@
-"use client";
+'use client';
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from 'react';
 
-import AdminCalendar from "@/components/admin/AdminCalendar";
+import AdminCalendar from '@/components/admin/AdminCalendar';
 
-
-type Reservation = {
-  id:number;
-  name:string;
-  phone:string;
-  email:string;
-  date:string;
-  time:string;
-  guests:string;
-  status:string;
+type Service = {
+  id: number;
+  name: string;
+  duration: number;
+  price: number | null;
 };
 
-
-
-export default function CalendarPage(){
-
-
-const [reservations,setReservations] =
-useState<Reservation[]>([]);
-
-
-const [loading,setLoading] =
-useState(true);
-
-
-
-
-
-useEffect(()=>{
-
-
-const controller =
-new AbortController();
-
-
-
-async function fetchReservations(){
-
-
-try{
-
-
-const response =
-await fetch(
-"/api/admin/reservations",
-{
-signal:controller.signal,
-}
-);
-
-
-
-const data =
-await response.json();
-
-
-
-setReservations(
-Array.isArray(data)
-?
-data
-:
-[]
-);
-
-
-
-}
-catch(error){
-
-
-if(
-error instanceof DOMException &&
-error.name==="AbortError"
-){
-return;
-}
-
-
-console.error(
-"Loading reservations error:",
-error
-);
-
-
-setReservations([]);
-
-
-}
-finally{
-
-setLoading(false);
-
-}
-
-
-}
-
-
-
-fetchReservations();
-
-
-
-return ()=>controller.abort();
-
-
-},[]);
-
-
-
-
-
-
-
-async function updateReservation(
-id:number,
-status:string
-){
-
-
-setReservations(prev=>
-
-prev.map(item=>
-
-item.id===id
-
-?
-{
-...item,
-status,
-}
-
-:
-
-item
-
-)
-
-);
-
-
-
-try{
-
-
-await fetch(
-`/api/admin/reservations/${id}`,
-{
-
-method:"PATCH",
-
-headers:{
-"Content-Type":"application/json",
-},
-
-body:JSON.stringify({
-status,
-}),
-
-}
-
-);
-
-
-}
-catch(error){
-
-console.error(
-"Update reservation error:",
-error
-);
-
-}
-
-
-}
-
-
-
-
-
-
-
-
-async function deleteReservation(
-id:number
-){
-
-
-setReservations(prev=>
-
-prev.filter(item=>
-
-item.id!==id
-
-)
-
-);
-
-
-
-try{
-
-
-await fetch(
-`/api/admin/reservations/${id}`,
-{
-method:"DELETE",
-}
-);
-
-
-}
-catch(error){
-
-console.error(
-"Delete reservation error:",
-error
-);
-
-}
-
-
-}
-
-
-
-
-
-
-
-if(loading){
-
-return (
-
-<div
-
-className="
+type Reservation = {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: string;
+  status: string;
+  serviceId: number | null;
+  service: Service | null;
+};
+
+export default function CalendarPage() {
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchReservations() {
+      try {
+        const response = await fetch('/api/admin/reservations', {
+          signal: controller.signal,
+        });
+
+        const data = await response.json();
+
+        setReservations(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        console.error('Loading reservations error:', error);
+
+        setReservations([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReservations();
+
+    return () => controller.abort();
+  }, []);
+
+  async function updateReservation(id: number, status: string) {
+    setReservations((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              status,
+            }
+          : item,
+      ),
+    );
+
+    try {
+      await fetch(`/api/admin/reservations/${id}`, {
+        method: 'PATCH',
+
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          status,
+        }),
+      });
+    } catch (error) {
+      console.error('Update reservation error:', error);
+    }
+  }
+
+  async function deleteReservation(id: number) {
+    setReservations((prev) => prev.filter((item) => item.id !== id));
+
+    try {
+      await fetch(`/api/admin/reservations/${id}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Delete reservation error:', error);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div
+        className="
 min-h-80
 
 flex
@@ -255,39 +113,17 @@ justify-center
 text-neutral-500
 
 "
+      >
+        Loading calendar...
+      </div>
+    );
+  }
 
->
-
-Loading calendar...
-
-</div>
-
-);
-
-}
-
-
-
-
-
-
-
-
-
-return (
-
-<main className="w-full">
-
-
-
-
-
-<section className="mb-10">
-
-
-<div
-
-className="
+  return (
+    <main className="w-full">
+      <section className="mb-10">
+        <div
+          className="
 inline-flex
 items-center
 
@@ -306,20 +142,12 @@ font-medium
 
 mb-5
 "
+        >
+          📅 Booking calendar
+        </div>
 
->
-
-📅 Booking calendar
-
-</div>
-
-
-
-
-
-<h1
-
-className="
+        <h1
+          className="
 text-3xl
 sm:text-4xl
 lg:text-5xl
@@ -329,47 +157,25 @@ font-bold
 tracking-tight
 
 "
+        >
+          Calendar
+        </h1>
 
->
-
-Calendar
-
-</h1>
-
-
-
-
-<p
-
-className="
+        <p
+          className="
 mt-3
 
 text-neutral-500
 dark:text-neutral-400
 
 "
+        >
+          Manage reservation schedule and availability
+        </p>
+      </section>
 
->
-
-Manage reservation schedule and availability
-
-</p>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<section
-
-className="
+      <section
+        className="
 rounded-3xl
 
 border
@@ -390,40 +196,15 @@ sm:p-6
 lg:p-8
 
 "
+      >
+        <AdminCalendar
+          reservations={reservations}
 
->
+          onUpdate={updateReservation}
 
-
-<AdminCalendar
-
-
-reservations={
-reservations
-}
-
-
-onUpdate={
-updateReservation
-}
-
-
-onDelete={
-deleteReservation
-}
-
-
-/>
-
-
-</section>
-
-
-
-
-
-
-</main>
-
-);
-
+          onDelete={deleteReservation}
+        />
+      </section>
+    </main>
+  );
 }

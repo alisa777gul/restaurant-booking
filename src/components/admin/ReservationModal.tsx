@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   X,
@@ -10,52 +10,51 @@ import {
   Check,
   Ban,
   Trash2,
-} from "lucide-react";
+  Sparkles,
+} from 'lucide-react';
 
+type Service = {
+  id: number;
+  name: string;
+  duration: number;
+  price: number | null;
+};
 
 type Reservation = {
-  id:number;
-  name:string;
-  phone:string;
-  email:string;
-  date:string;
-  time:string;
-  guests:string;
-  status:string;
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: string;
+  status: string;
+  serviceId: number | null;
+  service: Service | null;
 };
-
 
 type Props = {
-  reservation:Reservation;
+  reservation: Reservation;
 
-  onClose:()=>void;
+  onClose: () => void;
 
-  onUpdate:(id:number,status:string)=>void;
+  onUpdate: (id: number, status: string) => void;
 
-  onDelete:(id:number)=>void;
+  onDelete: (id: number) => void;
 };
 
-
-
 export default function ReservationModal({
+  reservation,
 
-reservation,
+  onClose,
 
-onClose,
+  onUpdate,
 
-onUpdate,
-
-onDelete,
-
-}:Props){
-
-
-
-return (
-
-<div
-
-className="
+  onDelete,
+}: Props) {
+  return (
+    <div
+      className="
 fixed
 inset-0
 
@@ -71,13 +70,9 @@ bg-black/60
 
 backdrop-blur-md
 "
-
->
-
-
-<div
-
-className="
+    >
+      <div
+        className="
 relative
 
 w-full
@@ -99,19 +94,11 @@ shadow-2xl
 overflow-hidden
 
 "
+      >
+        {/* HEADER */}
 
->
-
-
-
-
-
-{/* HEADER */}
-
-
-<div
-
-className="
+        <div
+          className="
 flex
 items-start
 justify-between
@@ -124,26 +111,19 @@ border-b
 border-neutral-200
 dark:border-neutral-800
 "
-
->
-
-
-<div>
-
-
-<p
-className="
+        >
+          <div>
+            <p
+              className="
 text-sm
 text-neutral-500
 "
->
-Reservation
-</p>
+            >
+              Reservation
+            </p>
 
-
-<h2
-
-className="
+            <h2
+              className="
 mt-1
 
 text-2xl
@@ -152,25 +132,15 @@ font-bold
 
 tracking-tight
 "
+            >
+              Reservation details
+            </h2>
+          </div>
 
->
+          <button
+            onClick={onClose}
 
-Reservation details
-
-</h2>
-
-
-</div>
-
-
-
-
-
-<button
-
-onClick={onClose}
-
-className="
+            className="
 w-10
 h-10
 
@@ -189,47 +159,25 @@ hover:text-red-500
 
 transition
 "
+          >
+            <X size={20} />
+          </button>
+        </div>
 
->
+        {/* CONTENT */}
 
-<X size={20}/>
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-
-{/* CONTENT */}
-
-
-
-<div
-
-className="
+        <div
+          className="
 p-6
 sm:p-8
 
 space-y-6
 "
+        >
+          {/* CLIENT */}
 
->
-
-
-
-
-
-{/* CLIENT */}
-
-
-<div
-
-className="
+          <div
+            className="
 rounded-2xl
 
 bg-neutral-100
@@ -237,22 +185,16 @@ dark:bg-neutral-900
 
 p-5
 "
-
->
-
-
-<div
-className="
+          >
+            <div
+              className="
 flex
 items-center
 gap-4
 "
->
-
-
-<div
-
-className="
+            >
+              <div
+                className="
 w-14
 h-14
 
@@ -271,40 +213,23 @@ font-bold
 text-xl
 
 "
+              >
+                {reservation.name.charAt(0).toUpperCase()}
+              </div>
 
->
-
-{
-reservation.name
-.charAt(0)
-.toUpperCase()
-}
-
-</div>
-
-
-
-<div>
-
-
-<h3
-
-className="
+              <div>
+                <h3
+                  className="
 text-lg
 
 font-bold
 "
+                >
+                  {reservation.name}
+                </h3>
 
->
-
-{reservation.name}
-
-</h3>
-
-
-<div
-
-className="
+                <div
+                  className="
 flex
 items-center
 gap-2
@@ -315,37 +240,19 @@ text-neutral-500
 
 mt-1
 "
+                >
+                  <Phone size={14} />
 
->
+                  {reservation.phone}
+                </div>
+              </div>
+            </div>
+          </div>
 
-<Phone size={14}/>
+          {/* INFO GRID */}
 
-{reservation.phone}
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-{/* INFO GRID */}
-
-
-<div
-
-className="
+          <div
+            className="
 grid
 
 grid-cols-1
@@ -355,74 +262,58 @@ sm:grid-cols-2
 gap-4
 
 "
+          >
+            <Info
+              icon={<Mail size={17} />}
 
->
+              title="Email"
 
+              value={reservation.email}
+            />
 
+            <Info
+              icon={<CalendarDays size={17} />}
 
-<Info
+              title="Date"
 
-icon={<Mail size={17}/>}
+              value={reservation.date}
+            />
 
-title="Email"
+            <Info
+              icon={<Clock size={17} />}
 
-value={reservation.email}
+              title="Time"
 
-/>
+              value={reservation.time}
+            />
 
+            <Info
+              icon={<Users size={17} />}
 
+              title="Guests"
 
-<Info
+              value={reservation.guests}
+            />
 
-icon={<CalendarDays size={17}/>}
+            <Info
+              icon={<Sparkles size={17} />}
 
-title="Date"
+              title="Service"
 
-value={reservation.date}
+              value={
+                reservation.service
+                  ? `${reservation.service.name}${
+                      reservation.service.price ? ` • ${reservation.service.price} €` : ''
+                    }`
+                  : '—'
+              }
+            />
+          </div>
 
-/>
+          {/* STATUS */}
 
-
-
-<Info
-
-icon={<Clock size={17}/>}
-
-title="Time"
-
-value={reservation.time}
-
-/>
-
-
-
-<Info
-
-icon={<Users size={17}/>}
-
-title="Guests"
-
-value={reservation.guests}
-
-/>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* STATUS */}
-
-
-<div
-
-className="
+          <div
+            className="
 flex
 
 items-center
@@ -439,24 +330,18 @@ dark:border-neutral-800
 p-4
 
 "
-
->
-
-
-<span
-className="
+          >
+            <span
+              className="
 text-sm
 text-neutral-500
 "
->
-Status
-</span>
+            >
+              Status
+            </span>
 
-
-
-<span
-
-className={`
+            <span
+              className={`
 
 px-4
 py-2
@@ -469,51 +354,23 @@ font-semibold
 
 
 ${
-reservation.status==="CONFIRMED"
-
-?
-
-"bg-green-500/10 text-green-500"
-
-:
-
-reservation.status==="CANCELLED"
-
-?
-
-"bg-red-500/10 text-red-500"
-
-:
-
-"bg-yellow-500/10 text-yellow-500"
-
+  reservation.status === 'CONFIRMED'
+    ? 'bg-green-500/10 text-green-500'
+    : reservation.status === 'CANCELLED'
+      ? 'bg-red-500/10 text-red-500'
+      : 'bg-yellow-500/10 text-yellow-500'
 }
 
 `}
+            >
+              {reservation.status}
+            </span>
+          </div>
 
->
+          {/* ACTIONS */}
 
-{reservation.status}
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* ACTIONS */}
-
-
-
-<div
-
-className="
+          <div
+            className="
 grid
 
 grid-cols-1
@@ -525,19 +382,11 @@ gap-3
 pt-2
 
 "
+          >
+            <button
+              onClick={() => onUpdate(reservation.id, 'CONFIRMED')}
 
->
-
-
-
-<button
-
-onClick={()=>onUpdate(
-reservation.id,
-"CONFIRMED"
-)}
-
-className="
+              className="
 flex
 items-center
 justify-center
@@ -558,28 +407,15 @@ font-semibold
 transition
 
 "
+            >
+              <Check size={18} />
+              Confirm
+            </button>
 
->
+            <button
+              onClick={() => onUpdate(reservation.id, 'CANCELLED')}
 
-<Check size={18}/>
-
-Confirm
-
-</button>
-
-
-
-
-
-
-<button
-
-onClick={()=>onUpdate(
-reservation.id,
-"CANCELLED"
-)}
-
-className="
+              className="
 flex
 items-center
 justify-center
@@ -600,28 +436,15 @@ font-semibold
 transition
 
 "
+            >
+              <Ban size={18} />
+              Cancel
+            </button>
 
->
+            <button
+              onClick={() => onDelete(reservation.id)}
 
-<Ban size={18}/>
-
-Cancel
-
-</button>
-
-
-
-
-
-
-
-<button
-
-onClick={()=>onDelete(
-reservation.id
-)}
-
-className="
+              className="
 flex
 items-center
 justify-center
@@ -644,68 +467,33 @@ font-semibold
 transition
 
 "
-
->
-
-<Trash2 size={18}/>
-
-Delete
-
-</button>
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-);
-
+            >
+              <Trash2 size={18} />
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-
-
-
-
-
-
 function Info({
+  icon,
 
-icon,
+  title,
 
-title,
+  value,
+}: {
+  icon: React.ReactNode;
 
-value,
+  title: string;
 
-}:{
-
-icon:React.ReactNode;
-
-title:string;
-
-value:string;
-
-}){
-
-
-return (
-
-<div
-
-className="
+  value: string;
+}) {
+  return (
+    <div
+      className="
 rounded-2xl
 
 border
@@ -716,13 +504,9 @@ dark:border-neutral-800
 p-4
 
 "
-
->
-
-
-<div
-
-className="
+    >
+      <div
+        className="
 flex
 items-center
 gap-2
@@ -734,35 +518,21 @@ text-sm
 mb-2
 
 "
+      >
+        {icon}
 
->
+        {title}
+      </div>
 
-{icon}
-
-{title}
-
-</div>
-
-
-
-<p
-
-className="
+      <p
+        className="
 font-medium
 
 break-all
 "
-
->
-
-{value}
-
-</p>
-
-
-</div>
-
-);
-
-
+      >
+        {value}
+      </p>
+    </div>
+  );
 }

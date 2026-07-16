@@ -1,26 +1,17 @@
-"use client";
+'use client';
 
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
 
 interface CalendarProps {
   value: Date | undefined;
   onChange: (date: Date | undefined) => void;
 }
 
-
-export default function Calendar({
-  value,
-  onChange,
-}: CalendarProps) {
-
-
+export default function Calendar({ value, onChange }: CalendarProps) {
   const today = new Date();
 
-
-
   return (
-
     <div
       className="
       w-full
@@ -45,9 +36,6 @@ export default function Calendar({
       transition-all
       "
     >
-
-
-
       {/* HEADER */}
 
       <div
@@ -58,9 +46,7 @@ export default function Calendar({
         justify-between
         "
       >
-
         <div>
-
           <p
             className="
             text-xs
@@ -71,7 +57,6 @@ export default function Calendar({
           >
             Booking
           </p>
-
 
           <h3
             className="
@@ -84,10 +69,7 @@ export default function Calendar({
           >
             Select date
           </h3>
-
         </div>
-
-
 
         <div
           className="
@@ -109,14 +91,7 @@ export default function Calendar({
         >
           📅
         </div>
-
-
       </div>
-
-
-
-
-
 
       <div
         className="
@@ -125,35 +100,22 @@ export default function Calendar({
         justify-center
         "
       >
-
         <DayPicker
-
           mode="single"
 
           selected={value}
 
           onSelect={onChange}
 
-
           disabled={{
             before: today,
           }}
 
-
           className="
           mx-auto
           "
-          
         />
-
-
       </div>
-
-
-
-
     </div>
-
-
   );
 }

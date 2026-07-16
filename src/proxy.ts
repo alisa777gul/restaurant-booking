@@ -1,74 +1,30 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-
-
   const pathname = request.nextUrl.pathname;
 
+  const session = request.cookies.get('admin_session');
 
-  const session = request.cookies.get(
-    "admin_session"
-  );
+  const isAdminPage = pathname.startsWith('/admin');
 
-
-  const isAdminPage =
-    pathname.startsWith("/admin");
-
-
-  const isLoginPage =
-    pathname === "/admin/login";
-
-
+  const isLoginPage = pathname === '/admin/login';
 
   // если пытаются открыть админку без входа
 
-  if (
-    isAdminPage &&
-    !isLoginPage &&
-    !session
-  ) {
-
-    return NextResponse.redirect(
-      new URL(
-        "/admin/login",
-        request.url
-      )
-    );
-
+  if (isAdminPage && !isLoginPage && !session) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
   }
-
-
 
   // если уже вошёл и открывает login
 
-  if (
-    isLoginPage &&
-    session
-  ) {
-
-    return NextResponse.redirect(
-      new URL(
-        "/admin/dashboard",
-        request.url
-      )
-    );
-
+  if (isLoginPage && session) {
+    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }
 
-
-
   return NextResponse.next();
-
 }
 
-
-
 export const config = {
-
-  matcher:[
-    "/admin/:path*"
-  ]
-
+  matcher: ['/admin/:path*'],
 };

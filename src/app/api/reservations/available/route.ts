@@ -1,66 +1,46 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-export async function POST(
-  request: Request
-) {
+export async function POST(request: Request) {
   try {
-
     const { date } = await request.json();
-
 
     if (!date) {
       return NextResponse.json(
         {
-          error: "Date required"
+          error: 'Date required',
         },
         {
-          status: 400
-        }
+          status: 400,
+        },
       );
     }
 
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        date,
+      },
 
-    const reservations =
-      await prisma.reservation.findMany({
-
-        where: {
-          date
-        },
-
-        select: {
-          time: true
-        }
-
-      });
-
-
-
-    const reservedTimes =
-      reservations.map(
-        item => item.time
-      );
-
-
-
-    return NextResponse.json({
-      reservedTimes
+      select: {
+        time: true,
+      },
     });
 
+    const reservedTimes = reservations.map((item) => item.time);
 
-  } catch(error) {
-
+    return NextResponse.json({
+      reservedTimes,
+    });
+  } catch (error) {
     console.error(error);
-
 
     return NextResponse.json(
       {
-        error:"Failed loading reservations"
+        error: 'Failed loading reservations',
       },
       {
-        status:500
-      }
+        status: 500,
+      },
     );
-
   }
 }
