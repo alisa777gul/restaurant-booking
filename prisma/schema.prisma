@@ -3,11 +3,9 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
-
 datasource db {
   provider = "postgresql"
 }
-
 
 model Reservation {
   id Int @id @default(autoincrement())
@@ -18,17 +16,17 @@ model Reservation {
 
   email String
 
-
   date String
 
   time String
 
-
   guests String
 
+  serviceId Int?
+
+  service Service? @relation(fields: [serviceId], references: [id])
 
   status String @default("PENDING")
-
 
   createdAt DateTime @default(now())
 }
@@ -41,8 +39,6 @@ model AvailableTime {
   active Boolean @default(true)
 }
 
-
-
 model BlockedDate {
   id Int @id @default(autoincrement())
 
@@ -52,13 +48,65 @@ model BlockedDate {
 }
 
 model TimeSlot {
-
   id Int @id @default(autoincrement())
 
   date String
 
   time String
 
+  available Boolean @default(true)
+
+  createdAt DateTime @default(now())
+}
+
+model WorkingHour {
+  id Int @id @default(autoincrement())
+
+  day String @unique
+
+  open String
+
+  close String
+
+  closed Boolean @default(false)
+
+  slotDuration Int @default(30)
+
   createdAt DateTime @default(now())
 
+  updatedAt DateTime @updatedAt
+}
+
+model RestaurantSettings {
+  id Int @id @default(autoincrement())
+
+  name String @default("Restaurant")
+
+  phone String?
+
+  email String?
+
+  address String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  description String?
+
+  duration Int
+
+  price Int?
+
+  active Boolean @default(true)
+
+  reservations Reservation[]
+
+  createdAt DateTime @default(now())
 }

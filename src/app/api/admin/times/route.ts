@@ -1,70 +1,67 @@
+/* eslint-disable prefer-const */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 
-// получить время конкретного дня
+function getDayName(date:string){
 
-export async function GET(
-  request: Request
-) {
-
-  try {
+  const day =
+    new Date(date).getDay();
 
 
-    const { searchParams } =
-      new URL(request.url);
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
 
-    const date =
-      searchParams.get("date");
+  return days[day];
 
-
-
-    if(!date){
-
-      return NextResponse.json(
-        [],
-      );
-
-    }
+}
 
 
 
-    const slots =
-      await prisma.timeSlot.findMany({
 
-        where:{
-          date,
-        },
+function generateSlots(
+open:string,
+close:string,
+duration:number
+){
 
-        orderBy:{
-          time:"asc",
-        },
-
-      });
+  const result:string[]=[];
 
 
-
-    return NextResponse.json(slots);
-
-
-
-  } catch(error){
+  let current =
+    new Date(`2000-01-01T${open}`);
 
 
-    console.error(error);
+  const end =
+    new Date(`2000-01-01T${close}`);
 
 
-    return NextResponse.json(
-      {
-        error:"Failed loading slots"
-      },
-      {
-        status:500
-      }
+
+  while(current < end){
+
+
+    result.push(
+      current.toTimeString().slice(0,5)
     );
 
+
+    current.setMinutes(
+      current.getMinutes()+duration
+    );
+
+
   }
+
+
+  return result;
 
 }
 
@@ -72,76 +69,101 @@ export async function GET(
 
 
 
-// добавить время на дату
 
-export async function POST(
-request:Request
+
+export async function GET(
+req:Request
 ){
 
 
 try{
 
 
-const {
-date,
-time
-}
-=
-await request.json();
+const {searchParams}=new URL(req.url);
 
 
+const date =
+searchParams.get("date");
 
-if(!date || !time){
 
-return NextResponse.json(
-{
-error:"Date and time required"
-},
-{
-status:400
-}
-);
+if(!date){
+
+return NextResponse.json([]);
 
 }
 
 
 
+const day =
+getDayName(date);
 
-const exists =
-await prisma.timeSlot.findFirst({
+
+
+
+
+const workingHour =
+await prisma.workingHour.findUnique({
 
 where:{
-date,
-time
+day
 }
 
 });
 
 
 
-if(exists){
 
-return NextResponse.json(
-{
-error:"Already exists"
-},
-{
-status:400
+
+// закрыто
+
+if(
+!workingHour ||
+workingHour.closed
+){
+
+return NextResponse.json([]);
+
 }
+
+
+
+
+
+const times =
+generateSlots(
+workingHour.open,
+workingHour.close,
+workingHour.slotDuration
+);
+const now = new Date();
+
+const filteredTimes = times.filter((time)=>{
+
+  const slotDate = new Date(
+  `${date}T${time}:00`
 );
 
-}
+
+  // если день сегодня — убрать прошлые часы
+  if(
+    slotDate <= now
+  ){
+    return false;
+  }
+
+
+  return true;
+
+});
 
 
 
 
+const reservations =
+await prisma.reservation.findMany({
 
-const slot =
-await prisma.timeSlot.create({
-
-data:{
-date,
-time
+where:{
+date
 }
 
 });
@@ -149,11 +171,37 @@ time
 
 
 
-return NextResponse.json(slot);
+
+
+const slots =
+filteredTimes.map(time=>({
+
+
+id:`${date}-${time}`,
+
+date,
+
+time,
+
+
+available:
+!reservations.some(
+r=>r.time===time
+)
+
+
+}));
 
 
 
-}catch(error){
+
+
+return NextResponse.json(slots);
+
+
+
+}
+catch(error){
 
 
 console.error(error);
@@ -161,7 +209,7 @@ console.error(error);
 
 return NextResponse.json(
 {
-error:"Server error"
+error:"Failed loading times"
 },
 {
 status:500

@@ -4,7 +4,19 @@
 import { useState,useEffect } from "react";
 import Calendar from "@/components/Calendar";
 
+type Service = {
 
+id:number;
+
+name:string;
+
+description:string|null;
+
+duration:number;
+
+price:number|null;
+
+};
 export default function ReservationPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -22,8 +34,49 @@ const [times, setTimes] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(false);
 
+const [services,setServices] =
+useState<Service[]>([]);
 
-  
+
+const [selectedService,setSelectedService] =
+useState<number | null>(null);
+  useEffect(()=>{
+
+  async function fetchServices(){
+
+    try{
+
+      const res =
+        await fetch("/api/services");
+
+
+      const data =
+        await res.json();
+
+
+      if(Array.isArray(data)){
+
+        setServices(data);
+
+      }
+
+
+    }catch(error){
+
+      console.error(
+        "Loading services error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  fetchServices();
+
+
+},[]);
 
 
   const formatDate = (date: Date) => {
@@ -136,13 +189,14 @@ const [times, setTimes] = useState<string[]>([]);
 
 
     if (
-      !name ||
-      !phone ||
-      !email ||
-      !date ||
-      !time ||
-      !guests
-    ) {
+ !name ||
+ !phone ||
+ !email ||
+ !date ||
+ !time ||
+ !guests ||
+ !selectedService
+){
 
 
       setError(
@@ -249,18 +303,20 @@ const [times, setTimes] = useState<string[]>([]);
             },
 
 
-            body: JSON.stringify({
+           body: JSON.stringify({
 
-              name,
-              phone,
-              email,
+ name,
+ phone,
+ email,
 
-              date,
-              time,
+ date,
+ time,
 
-              guests,
+ guests,
 
-            }),
+ serviceId:selectedService,
+
+}),
 
 
           }
@@ -646,7 +702,106 @@ onChange={handleDateChange}
 
 
 
+<div>
 
+<label
+className="
+block
+mb-3
+text-sm
+font-medium
+text-neutral-700
+dark:text-neutral-300
+"
+>
+Choose service
+</label>
+
+
+<div
+className="
+grid
+gap-3
+"
+>
+
+
+{
+services.map(service=>(
+
+
+<button
+
+key={service.id}
+
+type="button"
+
+onClick={()=>
+setSelectedService(service.id)
+}
+
+className={`
+
+rounded-2xl
+
+border
+
+p-4
+
+text-left
+
+transition
+
+
+${
+selectedService === service.id
+
+?
+
+"border-blue-600 bg-blue-500/10"
+
+:
+
+"border-neutral-200 dark:border-neutral-800"
+
+}
+
+`}
+
+>
+
+
+<p className="font-bold">
+{service.name}
+</p>
+
+
+<p className="
+text-sm
+text-neutral-500
+">
+
+{service.duration} min
+
+{
+service.price &&
+` • ${service.price} €`
+}
+
+</p>
+
+
+</button>
+
+
+))
+}
+
+
+</div>
+
+
+</div>
 
 
 <div>

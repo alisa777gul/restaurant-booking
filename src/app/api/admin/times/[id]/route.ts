@@ -3,56 +3,54 @@ import { prisma } from "@/lib/prisma";
 
 
 export async function DELETE(
-request:Request,
-context:{
-params:Promise<{
-id:string
-}>
-}
+  request: Request,
+  {
+    params,
+  }: {
+    params: Promise<{ id:string }>
+  }
 ){
 
 
-try{
+  try {
 
 
-const {
-id
-}=await context.params;
+    const {id} = await params;
 
 
-
-await prisma.timeSlot.delete({
-
-where:{
-id:Number(id)
-}
-
-});
+    await prisma.timeSlot.delete({
+      where:{
+        id:Number(id),
+      },
+    });
 
 
 
-return NextResponse.json({
-success:true
-});
+    return NextResponse.json({
+      success:true,
+    });
 
 
 
-}catch(error){
+  } catch(error){
 
 
-console.error(error);
+    console.error(
+      "Delete timeslot error:",
+      error
+    );
 
 
-return NextResponse.json(
-{
-error:"Delete failed"
-},
-{
-status:500
-}
-);
+    return NextResponse.json(
+      {
+        error:"Delete failed",
+      },
+      {
+        status:500,
+      }
+    );
 
 
-}
+  }
 
 }

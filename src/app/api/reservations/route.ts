@@ -1,166 +1,144 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-
 export async function POST(
- request:Request
-){
+  request: Request
+) {
 
-try{
+  try {
 
+    const {
+      name,
+      phone,
+      email,
+      date,
+      time,
+      guests,
+      serviceId
+    } = await request.json();
 
-const body =
-await request.json();
 
+    if (
+      !name ||
+      !phone ||
+      !email ||
+      !date ||
+      !time ||
+      !guests ||
+      !serviceId
+    ) {
 
+      return NextResponse.json(
+        {
+          error: "All fields required"
+        },
+        {
+          status: 400
+        }
+      );
 
-const {
-name,
-phone,
-email,
-date,
-time,
-guests
-}=body;
+    }
 
 
+    // существует ли услуга
 
-if(
-!name ||
-!phone ||
-!email ||
-!date ||
-!time ||
-!guests
-){
+    const service =
+      await prisma.service.findUnique({
 
-return NextResponse.json(
-{
-error:"All fields required"
-},
-{
-status:400
-}
-);
+        where: {
+          id: Number(serviceId)
+        }
 
-}
+      });
 
 
+    if (!service) {
 
+      return NextResponse.json(
+        {
+          error: "Service not found"
+        },
+        {
+          status: 400
+        }
+      );
 
-// существует ли такой слот
+    }
 
-const slot =
-await prisma.timeSlot.findFirst({
 
-where:{
-date,
-time
-}
+    // время уже занято?
 
-});
+    const exists =
+      await prisma.reservation.findFirst({
 
+        where: {
+          date,
+          time
+        }
 
+      });
 
-if(!slot){
 
-return NextResponse.json(
-{
-error:"This time is not available"
-},
-{
-status:400
-}
-);
+    if (exists) {
 
-}
+      return NextResponse.json(
+        {
+          error: "This time already booked"
+        },
+        {
+          status: 400
+        }
+      );
 
+    }
 
 
+    const reservation =
+      await prisma.reservation.create({
 
-// занято ли уже
+        data: {
 
-const exists =
-await prisma.reservation.findFirst({
+          name,
 
-where:{
-date,
-time
-}
+          phone,
 
-});
+          email,
 
+          date,
 
+          time,
 
-if(exists){
+          guests,
 
-return NextResponse.json(
-{
-error:"This time already booked"
-},
-{
-status:400
-}
-);
+          serviceId: Number(serviceId),
 
-}
+          status: "PENDING"
 
+        }
 
+      });
 
 
+    return NextResponse.json(
+      reservation,
+      {
+        status: 201
+      }
+    );
 
-const reservation =
-await prisma.reservation.create({
+  } catch (error) {
 
-data:{
+    console.error(error);
 
-name,
+    return NextResponse.json(
+      {
+        error: "Server error"
+      },
+      {
+        status: 500
+      }
+    );
 
-phone,
-
-email,
-
-date,
-
-time,
-
-guests,
-
-status:"PENDING"
-
-}
-
-});
-
-
-
-
-return NextResponse.json(
-reservation,
-{
-status:201
-}
-);
-
-
-
-}catch(error){
-
-
-console.error(error);
-
-
-return NextResponse.json(
-{
-error:"Server error"
-},
-{
-status:500
-}
-);
-
-
-}
-
+  }
 
 }

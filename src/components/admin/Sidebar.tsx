@@ -31,8 +31,8 @@ const links = [
     icon:CalendarDays,
   },
   {
-    title:"Customers",
-    href:"/admin/dashboard/customers",
+    title:"Services",
+    href:"/admin/dashboard/services",
     icon:Users,
   },
   {

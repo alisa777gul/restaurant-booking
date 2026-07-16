@@ -3,65 +3,37 @@ import { prisma } from "@/lib/prisma";
 
 
 export async function POST(
- request:Request
+request:Request
 ){
 
 try{
 
-
 const {
- date,
- time
+date,
+time
 }=await request.json();
-
-
-
-const slot =
-await prisma.timeSlot.findFirst({
-
-where:{
- date,
- time
-}
-
-});
-
-
-
-if(!slot){
-
-return NextResponse.json({
-
-available:false
-
-});
-
-}
-
 
 
 const reservation =
 await prisma.reservation.findFirst({
 
 where:{
- date,
- time
+date,
+time
 }
 
 });
 
 
-
 return NextResponse.json({
 
-available:!reservation
+available: !reservation
 
 });
 
 
-
-}catch(error){
-
+}
+catch(error){
 
 console.error(error);
 
@@ -77,6 +49,5 @@ status:500
 
 
 }
-
 
 }
