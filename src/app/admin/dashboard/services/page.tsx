@@ -1,143 +1,227 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
+import { Trash2 } from 'lucide-react';
 type Service = {
   id: number;
   name: string;
   description: string | null;
   duration: number;
   price: number | null;
+  active: boolean;
 };
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
 
   const [name, setName] = useState('');
-
   const [duration, setDuration] = useState(30);
-
   const [price, setPrice] = useState('');
 
-  async function load() {
-    const res = await fetch('/api/admin/services');
+  const [loading, setLoading] = useState(false);
 
-    const data = await res.json();
+  async function loadServices(signal?: AbortSignal) {
+    try {
+      const res = await fetch('/api/admin/services', {
+        signal,
+      });
 
-    setServices(data);
+      if (!res.ok) {
+        throw new Error('Failed to load services');
+      }
+
+      const data = await res.json();
+
+      setServices(data);
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error(error);
+      }
+    }
   }
+  async function deleteService(id: number) {
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'DELETE',
 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Archive failed');
+      }
+
+      await loadServices();
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
     const controller = new AbortController();
 
-    async function fetchServices() {
-      try {
-        const res = await fetch('/api/admin/services', {
-          signal: controller.signal,
-        });
-
-        const data = await res.json();
-
-        setServices(data);
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          console.error(error);
-        }
-      }
-    }
-
-    fetchServices();
+    loadServices(controller.signal);
 
     return () => {
       controller.abort();
     };
   }, []);
 
-  async function create() {
-    await fetch('/api/admin/services', {
-      method: 'POST',
+  async function createService() {
+    if (!name.trim()) return;
 
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    try {
+      setLoading(true);
 
-      body: JSON.stringify({
-        name,
+      const res = await fetch('/api/admin/services', {
+        method: 'POST',
 
-        duration,
+        headers: {
+          'Content-Type': 'application/json',
+        },
 
-        price,
-      }),
-    });
+        body: JSON.stringify({
+          name,
+          duration,
+          price: price ? Number(price) : null,
+        }),
+      });
 
-    setName('');
+      if (!res.ok) {
+        throw new Error('Failed to create service');
+      }
 
-    setPrice('');
+      setName('');
+      setDuration(30);
+      setPrice('');
 
-    setDuration(30);
-
-    load();
+      await loadServices();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
+  async function restoreService(id: number) {
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'PATCH',
 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Restore failed');
+      }
+
+      await loadServices();
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold">Services</h1>
+      <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Services</h1>
 
       <div
         className="
-bg-white
-border
-rounded-3xl
-p-6
-space-y-4
-"
+        bg-white
+        dark:bg-neutral-900
+        border
+        border-neutral-200
+        dark:border-neutral-800
+        rounded-3xl
+        p-6
+        space-y-4
+        "
       >
         <input
           placeholder="Service name"
-
           value={name}
-
           onChange={(e) => setName(e.target.value)}
+          className="
+          w-full
+          rounded-xl
+          p-3
+          border
+          border-neutral-200
+          bg-neutral-50
+          text-neutral-900
+          placeholder:text-neutral-400
 
-          className="border rounded-xl p-3 w-full"
+          dark:bg-neutral-800
+          dark:border-neutral-700
+          dark:text-white
+          dark:placeholder:text-neutral-500
+          "
         />
 
         <input
           type="number"
-
           placeholder="Duration"
-
           value={duration}
-
           onChange={(e) => setDuration(Number(e.target.value))}
+          className="
+          w-full
+          rounded-xl
+          p-3
+          border
+          border-neutral-200
+          bg-neutral-50
+          text-neutral-900
 
-          className="border rounded-xl p-3 w-full"
+          dark:bg-neutral-800
+          dark:border-neutral-700
+          dark:text-white
+          "
         />
 
         <input
           type="number"
-
           placeholder="Price"
-
           value={price}
-
           onChange={(e) => setPrice(e.target.value)}
+          className="
+          w-full
+          rounded-xl
+          p-3
+          border
+          border-neutral-200
+          bg-neutral-50
+          text-neutral-900
 
-          className="border rounded-xl p-3 w-full"
+          dark:bg-neutral-800
+          dark:border-neutral-700
+          dark:text-white
+          "
         />
 
         <button
-          onClick={create}
-
+          onClick={createService}
+          disabled={loading}
           className="
-bg-blue-600
-text-white
-px-6
-py-3
-rounded-xl
-"
+          bg-blue-600
+          hover:bg-blue-700
+          disabled:opacity-50
+          text-white
+          px-6
+          py-3
+          rounded-xl
+          transition
+          "
         >
-          Add service
+          {loading ? 'Adding...' : 'Add service'}
         </button>
       </div>
 
@@ -145,22 +229,51 @@ rounded-xl
         {services.map((service) => (
           <div
             key={service.id}
-
             className="
-border
-rounded-2xl
-p-4
-flex
-justify-between
-"
+            border
+            border-neutral-200
+            dark:border-neutral-800
+            bg-white
+            dark:bg-neutral-900
+            rounded-2xl
+            p-4
+            flex
+            justify-between
+            items-center
+            "
           >
             <div>
-              <p className="font-bold">{service.name}</p>
+              <p className="font-bold text-neutral-900 dark:text-white">{service.name}</p>
 
               <p className="text-sm text-neutral-500">{service.duration} min</p>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="font-semibold text-neutral-900 dark:text-white">
+                {service.price ?? 0} €
+              </div>
 
-            <div>{service.price ?? 0} €</div>
+              {service.active ? (
+                <button
+                  onClick={() => deleteService(service.id)}
+                  className="
+      text-red-500
+      hover:text-red-700
+      "
+                >
+                  Hide
+                </button>
+              ) : (
+                <button
+                  onClick={() => restoreService(service.id)}
+                  className="
+      text-green-500
+      hover:text-green-700
+      "
+                >
+                  Restore
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

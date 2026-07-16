@@ -69,3 +69,86 @@ export async function POST(request: Request) {
     );
   }
 }
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          error: 'Service id required',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const service = await prisma.service.update({
+      where: {
+        id: Number(id),
+      },
+
+      data: {
+        active: false,
+      },
+    });
+
+    return NextResponse.json(service);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        error: 'Archive failed',
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
+// восстановить услугу
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          error: 'Service id required',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const service = await prisma.service.update({
+      where: {
+        id: Number(id),
+      },
+
+      data: {
+        active: true,
+      },
+    });
+
+    return NextResponse.json(service);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        error: 'Restore failed',
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
