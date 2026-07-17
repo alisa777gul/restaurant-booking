@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import StatCard from '@/components/admin/StatCard';
 import { toast } from 'sonner';
 
@@ -38,8 +38,6 @@ export default function DashboardPage() {
 
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioEnabled, setAudioEnabled] = useState(false);
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -71,35 +69,6 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const enableAudio = () => {
-      if (!audioRef.current) {
-        audioRef.current = new Audio('/notification.mp3');
-        audioRef.current.volume = 1;
-      }
-
-      audioRef.current
-        .play()
-        .then(() => {
-          audioRef.current!.pause();
-          audioRef.current!.currentTime = 0;
-
-          setAudioEnabled(true);
-
-          console.log('🔊 Audio enabled');
-        })
-        .catch(() => {});
-    };
-
-    window.addEventListener('click', enableAudio, {
-      once: true,
-    });
-
-    return () => {
-      window.removeEventListener('click', enableAudio);
-    };
-  }, []);
-
-  useEffect(() => {
     const events = new EventSource('/api/admin/events');
 
     events.onmessage = (event) => {
@@ -108,27 +77,18 @@ export default function DashboardPage() {
       if (data.type === 'NEW_RESERVATION') {
         toast.success('🔔 New reservation received');
 
-        if (audioEnabled && audioRef.current) {
-          audioRef.current.currentTime = 0;
-
-          audioRef.current.play().catch((error) => {
-            console.error('Sound error:', error);
-          });
-        }
-
         loadDashboard();
       }
     };
 
-    events.onerror = () => {
-      console.log('SSE disconnected');
-      events.close();
-    };
+    queueMicrotask(() => {
+      loadDashboard();
+    });
 
     return () => {
       events.close();
     };
-  }, [audioEnabled, loadDashboard]);
+  }, [loadDashboard]);
 
   if (loading) {
     return (
