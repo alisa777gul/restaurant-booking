@@ -37,9 +37,13 @@ export default function ReservationPage() {
 
   const [selectedService, setSelectedService] = useState<number | null>(null);
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchServices() {
       try {
-        const res = await fetch('/api/services');
+        const res = await fetch('/api/services', {
+          signal: controller.signal,
+        });
 
         const data = await res.json();
 
@@ -47,13 +51,16 @@ export default function ReservationPage() {
           setServices(data);
         }
       } catch (error) {
-        console.error('Loading services error:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error(error);
+        }
       }
     }
 
     fetchServices();
-  }, []);
 
+    return () => controller.abort();
+  }, []);
   const formatDate = (date: Date) => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
       date.getDate(),
