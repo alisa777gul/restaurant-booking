@@ -1,21 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from '@/components/Calendar';
 import Header from '@/components/home/Header';
 import Footer from '@/components/Footer';
 
 type Service = {
   id: number;
-
   name: string;
-
   description: string | null;
-
   duration: number;
-
   price: number | null;
 };
+
+function formatDate(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+}
+
 export default function ReservationPage() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -28,14 +31,15 @@ export default function ReservationPage() {
 
   const [reservedTimes, setReservedTimes] = useState<string[]>([]);
   const [times, setTimes] = useState<string[]>([]);
+
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
   const [loading, setLoading] = useState(false);
 
   const [services, setServices] = useState<Service[]>([]);
-
   const [selectedService, setSelectedService] = useState<number | null>(null);
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -61,40 +65,38 @@ export default function ReservationPage() {
 
     return () => controller.abort();
   }, []);
-  const formatDate = (date: Date) => {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-      date.getDate(),
-    ).padStart(2, '0')}`;
-  };
 
   const date = selectedDate ? formatDate(selectedDate) : '';
 
-  const handleDateChange = async (date: Date | undefined) => {
-    setSelectedDate(date);
+  async function handleDateChange(newDate: Date | undefined) {
+    setSelectedDate(newDate);
 
     setTime('');
-
     setError('');
-
     setSuccess(false);
 
-    if (!date) {
+    if (!newDate) {
       setReservedTimes([]);
       setTimes([]);
-
       return;
     }
 
-    const formattedDate = formatDate(date);
+    const formattedDate = formatDate(newDate);
 
     try {
-      // занятые часы
+      const slotResponse = await fetch(`/api/admin/times?date=${formattedDate}`);
+
+      const slotData = await slotResponse.json();
+
+      setTimes(Array.isArray(slotData) ? slotData.map((item: { time: string }) => item.time) : []);
 
       const reservedResponse = await fetch('/api/reservations/available', {
         method: 'POST',
+
         headers: {
           'Content-Type': 'application/json',
         },
+
         body: JSON.stringify({
           date: formattedDate,
         }),
@@ -102,31 +104,20 @@ export default function ReservationPage() {
 
       const reservedData = await reservedResponse.json();
 
-      setReservedTimes(reservedData.reservedTimes || []);
-
-      // доступные часы именно этой даты
-
-      const slotResponse = await fetch(`/api/admin/times?date=${formattedDate}`);
-
-      const slotData = await slotResponse.json();
-
-      setTimes(slotData.map((item: { time: string }) => item.time));
+      setReservedTimes(reservedData.reservedTimes ?? []);
     } catch {
       setReservedTimes([]);
       setTimes([]);
-
       setError('Could not load available times');
     }
-  };
+  }
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     setError('');
-
     setSuccess(false);
 
     if (!name || !phone || !email || !date || !time || !guests || !selectedService) {
       setError('Please fill in all fields');
-
       return;
     }
 
@@ -134,34 +125,12 @@ export default function ReservationPage() {
 
     if (!emailValid) {
       setError('Please enter a valid email');
-
       return;
     }
 
     setLoading(true);
 
     try {
-      const checkResponse = await fetch('/api/reservations/check', {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json',
-        },
-
-        body: JSON.stringify({
-          date,
-          time,
-        }),
-      });
-
-      const availability = await checkResponse.json();
-
-      if (!availability.available) {
-        setError('This time is already reserved');
-
-        return;
-      }
-
       const response = await fetch('/api/reservations', {
         method: 'POST',
 
@@ -173,12 +142,9 @@ export default function ReservationPage() {
           name,
           phone,
           email,
-
           date,
           time,
-
           guests,
-
           serviceId: selectedService,
         }),
       });
@@ -187,33 +153,24 @@ export default function ReservationPage() {
 
       if (!response.ok) {
         setError(data.error || 'Something went wrong');
-
         return;
       }
 
       setSuccess(true);
 
-      // очистка формы
-
       setName('');
-
       setPhone('');
-
       setEmail('');
-
       setSelectedDate(undefined);
-
       setTime('');
-
       setGuests('2');
-
       setReservedTimes([]);
     } catch {
       setError('Server error. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <main
