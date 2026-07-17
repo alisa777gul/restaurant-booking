@@ -5,10 +5,21 @@ export async function POST(request: Request) {
   try {
     const { date } = await request.json();
 
-    if (!date) {
+    if (!date || typeof date !== 'string') {
       return NextResponse.json(
         {
           error: 'Date required',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid date format',
         },
         {
           status: 400,
@@ -26,7 +37,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const reservedTimes = reservations.map((item) => item.time);
+    const reservedTimes = reservations.map(({ time }) => time);
 
     return NextResponse.json({
       reservedTimes,

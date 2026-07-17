@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// DELETE /api/admin/date-overrides/[id]
-// Removes a date override so the date falls back to the regular
-// weekly working hours again.
 export async function DELETE(
   request: Request,
   {
@@ -15,9 +12,22 @@ export async function DELETE(
   try {
     const { id } = await params;
 
+    const overrideId = Number(id);
+
+    if (Number.isNaN(overrideId)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid id',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     await prisma.dateOverride.delete({
       where: {
-        id: Number(id),
+        id: overrideId,
       },
     });
 

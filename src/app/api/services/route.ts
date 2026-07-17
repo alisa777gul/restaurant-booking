@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { success, failure } from '@/lib/api';
 
 export async function GET() {
   try {
@@ -13,17 +13,10 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(services);
+    return success(services);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      {
-        error: 'Failed loading services',
-      },
-      {
-        status: 500,
-      },
-    );
+    return failure('Failed loading services');
   }
 }

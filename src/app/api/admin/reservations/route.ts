@@ -1,15 +1,26 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// получить все брони
-
 export async function GET() {
   try {
     const reservations = await prisma.reservation.findMany({
-      // include the related service so the admin UI
-      // can show which service was booked
-      include: {
-        service: true,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        date: true,
+        time: true,
+        status: true,
+
+        service: {
+          select: {
+            id: true,
+            name: true,
+            duration: true,
+            price: true,
+          },
+        },
       },
 
       orderBy: [

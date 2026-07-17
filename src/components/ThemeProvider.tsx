@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -14,26 +14,35 @@ export const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
 });
 
+function getTheme(): Theme {
+  if (typeof document === 'undefined') {
+    return 'light';
+  }
+
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
+
+function subscribe(callback: () => void) {
+  const observer = new MutationObserver(() => {
+    callback();
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  return () => observer.disconnect();
+}
+
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') as Theme | null;
-
-    if (saved === 'dark') {
-      document.documentElement.classList.add('dark');
-      setTheme('dark');
-    }
-  }, []);
-
+  const theme = useSyncExternalStore(subscribe, getTheme, (): Theme => 'light');
   function toggleTheme() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-
-    setTheme(next);
-
-    localStorage.setItem('theme', next);
+    const next = theme === 'dark' ? 'light' : 'dark';
 
     document.documentElement.classList.toggle('dark', next === 'dark');
+
+    localStorage.setItem('theme', next);
   }
 
   return (

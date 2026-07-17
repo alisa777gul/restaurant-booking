@@ -5,10 +5,24 @@ export async function POST(request: Request) {
   try {
     const { date, time } = await request.json();
 
+    if (!date || !time) {
+      return NextResponse.json(
+        {
+          error: 'Date and time required',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     const reservation = await prisma.reservation.findFirst({
       where: {
         date,
         time,
+      },
+      select: {
+        id: true,
       },
     });
 

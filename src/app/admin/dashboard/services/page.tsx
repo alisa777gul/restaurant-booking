@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Trash2 } from 'lucide-react';
 type Service = {
   id: number;
@@ -20,7 +20,7 @@ export default function ServicesPage() {
 
   const [loading, setLoading] = useState(false);
 
-  async function loadServices(signal?: AbortSignal) {
+  const loadServices = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await fetch('/api/admin/services', {
         signal,
@@ -38,7 +38,8 @@ export default function ServicesPage() {
         console.error(error);
       }
     }
-  }
+  }, []);
+
   async function deleteService(id: number) {
     try {
       const res = await fetch('/api/admin/services', {
@@ -65,13 +66,14 @@ export default function ServicesPage() {
   useEffect(() => {
     const controller = new AbortController();
 
-    loadServices(controller.signal);
+    queueMicrotask(() => {
+      loadServices(controller.signal);
+    });
 
     return () => {
       controller.abort();
     };
-  }, []);
-
+  }, [loadServices]);
   async function createService() {
     if (!name.trim()) return;
 

@@ -14,6 +14,19 @@ export async function PATCH(
   try {
     const body = await request.json();
 
+    const allowedStatuses = ['PENDING', 'CONFIRMED', 'CANCELLED'];
+
+    if (!allowedStatuses.includes(body.status)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid status',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     const { id } = await params;
 
     const reservation = await prisma.reservation.update({
@@ -44,16 +57,14 @@ export async function PATCH(
     );
   }
 }
-export async function DELETE(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{
-      id: string;
-    }>;
-  },
-) {
+
+export async function DELETE({
+  params,
+}: {
+  params: Promise<{
+    id: string;
+  }>;
+}) {
   try {
     const { id } = await params;
 
@@ -63,11 +74,11 @@ export async function DELETE(
       },
     });
 
-    return Response.json(reservation);
+    return NextResponse.json(reservation);
   } catch (error) {
     console.error(error);
 
-    return Response.json(
+    return NextResponse.json(
       {
         error: 'Delete failed',
       },

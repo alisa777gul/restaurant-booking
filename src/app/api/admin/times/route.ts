@@ -12,11 +12,8 @@ export async function GET(req: Request) {
       return NextResponse.json([]);
     }
 
-    // Effective hours for this date: combines the weekly working hours
-    // with any per-date override (closures / special openings).
     const hours = await getEffectiveHours(date);
 
-    // Closed on this date -> no slots at all.
     if (!hours) {
       return NextResponse.json([]);
     }
@@ -28,7 +25,6 @@ export async function GET(req: Request) {
     const filteredTimes = times.filter((time) => {
       const slotDate = new Date(`${date}T${time}:00`);
 
-      // If the day is today, hide slots that are already in the past.
       if (slotDate <= now) {
         return false;
       }
@@ -40,7 +36,12 @@ export async function GET(req: Request) {
       where: {
         date,
       },
+      select: {
+        time: true,
+      },
     });
+
+    const reservedTimes = new Set(reservations.map((reservation) => reservation.time));
 
     const slots = filteredTimes.map((time) => ({
       id: `${date}-${time}`,
@@ -49,7 +50,7 @@ export async function GET(req: Request) {
 
       time,
 
-      available: !reservations.some((r) => r.time === time),
+      available: !reservedTimes.has(time),
     }));
 
     return NextResponse.json(slots);

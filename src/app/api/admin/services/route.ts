@@ -1,94 +1,84 @@
-import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { success, failure } from '@/lib/api';
 
-// получить услуги
+function getId(body: { id?: unknown }) {
+  if (!body.id) {
+    return null;
+  }
+
+  const id = Number(body.id);
+
+  if (Number.isNaN(id)) {
+    return null;
+  }
+
+  return id;
+}
+
 export async function GET() {
   try {
     const services = await prisma.service.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        duration: true,
+        price: true,
+        active: true,
+      },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    return NextResponse.json(services);
+    return success(services);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      {
-        error: 'Failed loading services',
-      },
-      {
-        status: 500,
-      },
-    );
+    return failure('Failed loading services');
   }
 }
 
-// создать услугу
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
     const { name, description, duration, price } = body;
 
-    if (!name || !duration) {
-      return NextResponse.json(
-        {
-          error: 'Name and duration required',
-        },
-        {
-          status: 400,
-        },
-      );
+    if (!name || !duration || Number.isNaN(Number(duration))) {
+      return failure('Name and duration required', 400);
     }
 
     const service = await prisma.service.create({
       data: {
         name,
-
         description,
-
         duration: Number(duration),
-
-        price: price ? Number(price) : null,
+        price: price !== undefined && price !== '' ? Number(price) : null,
       },
     });
 
-    return NextResponse.json(service);
+    return success(service);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      {
-        error: 'Create failed',
-      },
-      {
-        status: 500,
-      },
-    );
+    return failure('Create failed');
   }
 }
+
 export async function DELETE(request: Request) {
   try {
     const body = await request.json();
 
-    const { id } = body;
+    const id = getId(body);
 
     if (!id) {
-      return NextResponse.json(
-        {
-          error: 'Service id required',
-        },
-        {
-          status: 400,
-        },
-      );
+      return failure('Service id required', 400);
     }
 
     const service = await prisma.service.update({
       where: {
-        id: Number(id),
+        id,
       },
 
       data: {
@@ -96,41 +86,27 @@ export async function DELETE(request: Request) {
       },
     });
 
-    return NextResponse.json(service);
+    return success(service);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      {
-        error: 'Archive failed',
-      },
-      {
-        status: 500,
-      },
-    );
+    return failure('Archive failed');
   }
 }
-// восстановить услугу
+
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
 
-    const { id } = body;
+    const id = getId(body);
 
     if (!id) {
-      return NextResponse.json(
-        {
-          error: 'Service id required',
-        },
-        {
-          status: 400,
-        },
-      );
+      return failure('Service id required', 400);
     }
 
     const service = await prisma.service.update({
       where: {
-        id: Number(id),
+        id,
       },
 
       data: {
@@ -138,17 +114,10 @@ export async function PATCH(request: Request) {
       },
     });
 
-    return NextResponse.json(service);
+    return success(service);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      {
-        error: 'Restore failed',
-      },
-      {
-        status: 500,
-      },
-    );
+    return failure('Restore failed');
   }
 }

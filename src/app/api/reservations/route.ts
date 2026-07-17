@@ -4,7 +4,17 @@ import { getEffectiveHours, generateSlots } from '@/lib/availability';
 
 export async function POST(request: Request) {
   try {
-    const { name, phone, email, date, time, guests, serviceId } = await request.json();
+    const {
+      name,
+      phone,
+      email,
+      date,
+      time,
+      guests,
+      serviceId: rawServiceId,
+    } = await request.json();
+
+    const serviceId = Number(rawServiceId);
 
     if (!name || !phone || !email || !date || !time || !guests || !serviceId) {
       return NextResponse.json(
@@ -17,7 +27,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // существует ли услуга
+    if (Number.isNaN(serviceId)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid service',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
     const service = await prisma.service.findUnique({
       where: {
@@ -35,9 +54,6 @@ export async function POST(request: Request) {
         },
       );
     }
-
-    // выбранная дата открыта и время попадает в рабочие часы?
-    // (учитывает недельные часы + переопределения конкретных дат)
 
     const hours = await getEffectiveHours(date);
 
@@ -65,9 +81,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // время уже занято?
-
-    const exists = await prisma.reservation.findFirst({
+    const exists = await prisma.reservation.count({
       where: {
         date,
         time,
@@ -88,24 +102,14 @@ export async function POST(request: Request) {
     const reservation = await prisma.reservation.create({
       data: {
         name,
-
         phone,
-
         email,
-
         date,
-
         time,
-
         guests,
-
-        serviceId: Number(serviceId),
-
+        serviceId,
         status: 'PENDING',
       },
-
-      // return the related service so the client receives
-      // the full booking (including the chosen service)
       include: {
         service: true,
       },

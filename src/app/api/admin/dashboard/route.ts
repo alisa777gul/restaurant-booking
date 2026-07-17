@@ -3,14 +3,16 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
+      today.getDate(),
+    ).padStart(2, '0')}`;
 
     const todayReservations = await prisma.reservation.findMany({
       where: {
-        date: today,
+        date,
       },
-      // include the related service so the dashboard
-      // can show which service was booked
+
       include: {
         service: true,
       },
@@ -19,19 +21,21 @@ export async function GET() {
       },
     });
 
-    const total = await prisma.reservation.count();
+    const [total, pending, confirmed] = await Promise.all([
+      prisma.reservation.count(),
 
-    const pending = await prisma.reservation.count({
-      where: {
-        status: 'PENDING',
-      },
-    });
+      prisma.reservation.count({
+        where: {
+          status: 'PENDING',
+        },
+      }),
 
-    const confirmed = await prisma.reservation.count({
-      where: {
-        status: 'CONFIRMED',
-      },
-    });
+      prisma.reservation.count({
+        where: {
+          status: 'CONFIRMED',
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       todayReservations,

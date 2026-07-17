@@ -5,7 +5,10 @@ export async function POST() {
     success: true,
   });
 
-  response.cookies.delete('admin_session');
+  response.cookies.set('admin_session', '', {
+    expires: new Date(0),
+    path: '/',
+  });
 
   return response;
 }

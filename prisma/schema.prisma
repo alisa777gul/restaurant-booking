@@ -11,24 +11,23 @@ model Reservation {
   id Int @id @default(autoincrement())
 
   name String
-
   phone String
-
   email String
 
   date String
-
   time String
 
   guests String
 
-  serviceId Int?
+  serviceId Int
 
-  service Service? @relation(fields: [serviceId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
 
   status String @default("PENDING")
 
   createdAt DateTime @default(now())
+
+  @@unique([date, time])
 }
 
 model AvailableTime {
