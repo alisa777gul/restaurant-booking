@@ -77,7 +77,7 @@ export default function DashboardPage() {
       if (data.type === 'NEW_RESERVATION') {
         toast.success('🔔 New reservation received');
 
-        const audio = new Audio('/notification.wav');
+        const audio = new Audio('/notification.mp3');
 
         audio.play().catch((error) => {
           console.error('Sound error:', error);
