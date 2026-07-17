@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getEffectiveHours, generateSlots } from '@/lib/availability';
+import { notifyReservation } from '@/lib/reservation-events';
 
 export async function POST(request: Request) {
   try {
@@ -113,6 +114,11 @@ export async function POST(request: Request) {
       include: {
         service: true,
       },
+    });
+
+    notifyReservation({
+      type: 'NEW_RESERVATION',
+      reservation,
     });
 
     return NextResponse.json(reservation, {

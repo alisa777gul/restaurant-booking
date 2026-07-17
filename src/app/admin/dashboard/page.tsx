@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
+import { useCallback, useEffect, useState } from 'react';
 import StatCard from '@/components/admin/StatCard';
+import { toast } from 'sonner';
 
 type Service = {
   id: number;
@@ -37,49 +37,58 @@ export default function DashboardPage() {
   });
 
   const [reservations, setReservations] = useState<Reservation[]>([]);
-
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const loadDashboard = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/dashboard', {
+        cache: 'no-store',
+      });
 
-    async function loadDashboard() {
-      try {
-        const response = await fetch('/api/admin/dashboard', {
-          signal: controller.signal,
-        });
+      const data = await response.json();
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to load dashboard');
-        }
-
-        setStats(
-          data.stats ?? {
-            total: 0,
-            pending: 0,
-            confirmed: 0,
-            today: 0,
-          },
-        );
-
-        setReservations(data.todayReservations ?? []);
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return;
-        }
-
-        console.error('Dashboard error:', error);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(data.error);
       }
+
+      setStats(
+        data.stats ?? {
+          total: 0,
+          pending: 0,
+          confirmed: 0,
+          today: 0,
+        },
+      );
+
+      setReservations(data.todayReservations ?? []);
+    } catch (error) {
+      console.error('Dashboard error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    loadDashboard();
-
-    return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    const events = new EventSource('/api/admin/events');
+
+    events.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'NEW_RESERVATION') {
+        toast.success('🔔 New reservation received');
+
+        loadDashboard();
+      }
+    };
+
+    queueMicrotask(() => {
+      loadDashboard();
+    });
+
+    return () => {
+      events.close();
+    };
+  }, [loadDashboard]);
 
   if (loading) {
     return (

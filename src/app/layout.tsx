@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import ThemeProvider from '@/components/ThemeProvider';
+import { Toaster } from 'sonner';
 
 const geist = Geist({
   subsets: ['latin'],
@@ -40,6 +41,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dark:text-white
         `}
       >
+        {' '}
+        <Toaster position="top-right" />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
