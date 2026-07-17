@@ -4,18 +4,32 @@ export async function GET() {
   const stream = new ReadableStream({
     start(controller) {
       const send = (data: unknown) => {
-        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        try {
+          controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        } catch (error) {
+          console.error('SSE closed:', error);
+        }
       };
 
       const unsubscribe = subscribe(send);
 
-      send({
-        type: 'CONNECTED',
-      });
+      const interval = setInterval(() => {
+        try {
+          controller.enqueue(`: ping\n\n`);
+        } catch {
+          clearInterval(interval);
+        }
+      }, 30000);
 
       return () => {
+        clearInterval(interval);
+
         unsubscribe();
       };
+    },
+
+    cancel() {
+      console.log('SSE connection closed');
     },
   });
 

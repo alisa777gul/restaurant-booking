@@ -1,32 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
 import { Clock } from 'lucide-react';
+
+type Reservation = {
+  id: number;
+  time: string;
+};
 
 type TimeSlot = {
   id: string;
-
   date: string;
-
   time: string;
-
   available: boolean;
 };
 
 type Props = {
   date: string;
+  reservations: Reservation[];
+  onSelect: (time: string) => void;
 };
 
-export default function TimeSlots({ date }: Props) {
+export default function TimeSlots({ date, reservations, onSelect }: Props) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!date) {
-      return;
-    }
+    if (!date) return;
 
     let cancelled = false;
 
@@ -39,7 +40,12 @@ export default function TimeSlots({ date }: Props) {
         const data = await res.json();
 
         if (!cancelled && Array.isArray(data)) {
-          setSlots(data);
+          const updated = data.map((slot) => ({
+            ...slot,
+            available: !reservations.some((reservation) => reservation.time === slot.time),
+          }));
+
+          setSlots(updated);
         }
       } catch (error) {
         console.error('Loading slots error', error);
@@ -55,16 +61,16 @@ export default function TimeSlots({ date }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [date]);
+  }, [date, reservations]);
 
   if (loading) {
     return (
       <div
         className="
-py-10
-text-center
-text-neutral-500
-"
+        py-10
+        text-center
+        text-neutral-500
+        "
       >
         Loading times...
       </div>
@@ -74,39 +80,39 @@ text-neutral-500
   return (
     <div
       className="
-mt-8
-pt-8
-border-t
-border-neutral-200
-dark:border-neutral-800
-"
+      mt-8
+      pt-8
+      border-t
+      border-neutral-200
+      dark:border-neutral-800
+      "
     >
       <div
         className="
-flex
-items-center
-justify-between
-mb-5
-"
+        flex
+        items-center
+        justify-between
+        mb-5
+        "
       >
         <div
           className="
-flex
-items-center
-gap-3
-"
+          flex
+          items-center
+          gap-3
+          "
         >
           <div
             className="
-w-10
-h-10
-rounded-xl
-bg-blue-500/10
-text-blue-500
-flex
-items-center
-justify-center
-"
+            w-10
+            h-10
+            rounded-xl
+            bg-blue-500/10
+            text-blue-500
+            flex
+            items-center
+            justify-center
+            "
           >
             <Clock size={20} />
           </div>
@@ -114,23 +120,16 @@ justify-center
           <div>
             <h3 className="font-bold">Available times</h3>
 
-            <p
-              className="
-text-sm
-text-neutral-500
-"
-            >
-              Generated from working hours
-            </p>
+            <p className="text-sm text-neutral-500">Click free time to create booking</p>
           </div>
         </div>
 
         <span
           className="
-text-sm
-text-blue-500
-font-semibold
-"
+          text-sm
+          text-blue-500
+          font-semibold
+          "
         >
           {slots.length} slots
         </span>
@@ -139,52 +138,68 @@ font-semibold
       {slots.length === 0 ? (
         <div
           className="
-rounded-2xl
-border
-border-dashed
-p-8
-text-center
-text-neutral-500
-"
+          rounded-2xl
+          border
+          border-dashed
+          p-8
+          text-center
+          text-neutral-500
+          "
         >
           No available times
         </div>
       ) : (
         <div
           className="
-grid
-sm:grid-cols-2
-lg:grid-cols-3
-gap-3
-"
+          grid
+          sm:grid-cols-2
+          lg:grid-cols-3
+          gap-3
+          "
         >
           {slots.map((slot) => (
-            <div
+            <button
               key={slot.id}
 
+              type="button"
+
+              disabled={!slot.available}
+
+              onClick={() => onSelect(slot.time)}
+
               className={`
-rounded-2xl
-border
-px-4
-py-3
-flex
-justify-between
-items-center
+              rounded-2xl
+              border
+              px-4
+              py-3
+              flex
+              justify-between
+              items-center
+              transition
 
-${
-  slot.available
-    ? 'bg-green-500/5 border-green-500/30'
-    : 'bg-red-500/5 border-red-500/30 opacity-60'
-}
-
-`}
+              ${
+                slot.available
+                  ? `
+                bg-green-500/5
+                border-green-500/30
+                hover:bg-green-500/10
+                cursor-pointer
+                `
+                  : `
+                bg-red-500/5
+                border-red-500/30
+                opacity-60
+                cursor-not-allowed
+                `
+              }
+              `}
             >
               <div
                 className="
-flex
-items-center
-gap-2
-"
+                flex
+                items-center
+                gap-2
+                "
               >
                 <Clock size={16} />
 
@@ -192,7 +207,7 @@ gap-2
               </div>
 
               <span className="text-xs">{slot.available ? 'Available' : 'Booked'}</span>
-            </div>
+            </button>
           ))}
         </div>
       )}

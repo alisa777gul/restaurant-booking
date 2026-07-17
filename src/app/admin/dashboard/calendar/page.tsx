@@ -120,7 +120,7 @@ text-neutral-500
   }
 
   return (
-    <main className="w-full">
+    <>
       <section className="mb-10">
         <div
           className="
@@ -205,6 +205,6 @@ lg:p-8
           onDelete={deleteReservation}
         />
       </section>
-    </main>
+    </>
   );
 }

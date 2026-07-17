@@ -11,7 +11,13 @@ export function subscribe(listener: Listener) {
 }
 
 export function notifyReservation(data: unknown) {
-  listeners.forEach((listener) => {
-    listener(data);
-  });
+  for (const listener of listeners) {
+    try {
+      listener(data);
+    } catch (error) {
+      console.error('SSE listener failed:', error);
+
+      listeners.delete(listener);
+    }
+  }
 }

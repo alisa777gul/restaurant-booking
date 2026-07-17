@@ -20,16 +20,25 @@ type Service = {
   price: number | null;
 };
 
-type Reservation = {
+export type Reservation = {
   id: number;
+
   name: string;
+
   phone: string;
+
   email: string;
+
   date: string;
+
   time: string;
+
   guests: string;
+
   status: string;
+
   serviceId: number | null;
+
   service: Service | null;
 };
 
@@ -43,7 +52,7 @@ type Props = {
   onDelete: (id: number) => void;
 };
 
-export default function ReservationModal({
+export default function ReservationDetailsModal({
   reservation,
 
   onClose,
@@ -57,7 +66,6 @@ export default function ReservationModal({
       className="
 fixed
 inset-0
-
 z-50
 
 flex
@@ -73,26 +81,21 @@ backdrop-blur-md
     >
       <div
         className="
-relative
-
 w-full
-
 max-w-xl
 
 rounded-3xl
 
-border
-
-border-neutral-200
-dark:border-neutral-800
+overflow-hidden
 
 bg-white
 dark:bg-neutral-950
 
+border
+border-neutral-200
+dark:border-neutral-800
+
 shadow-2xl
-
-overflow-hidden
-
 "
       >
         {/* HEADER */}
@@ -104,10 +107,8 @@ items-start
 justify-between
 
 p-6
-sm:p-8
 
 border-b
-
 border-neutral-200
 dark:border-neutral-800
 "
@@ -119,21 +120,17 @@ text-sm
 text-neutral-500
 "
             >
-              Reservation
+              Reservation details
             </p>
 
             <h2
               className="
-mt-1
-
 text-2xl
-
 font-bold
-
-tracking-tight
+mt-1
 "
             >
-              Reservation details
+              Booking
             </h2>
           </div>
 
@@ -146,14 +143,12 @@ h-10
 
 rounded-xl
 
-flex
-items-center
-justify-center
-
 bg-neutral-100
 dark:bg-neutral-900
 
-text-neutral-500
+flex
+items-center
+justify-center
 
 hover:text-red-500
 
@@ -164,37 +159,30 @@ transition
           </button>
         </div>
 
-        {/* CONTENT */}
-
         <div
           className="
 p-6
-sm:p-8
-
-space-y-6
+space-y-5
 "
         >
-          {/* CLIENT */}
+          {/* CUSTOMER CARD */}
 
           <div
             className="
-rounded-2xl
+rounded-3xl
 
 bg-neutral-100
 dark:bg-neutral-900
 
 p-5
-"
-          >
-            <div
-              className="
+
 flex
 items-center
 gap-4
 "
-            >
-              <div
-                className="
+          >
+            <div
+              className="
 w-14
 h-14
 
@@ -211,56 +199,48 @@ justify-center
 font-bold
 
 text-xl
-
 "
-              >
-                {reservation.name.charAt(0).toUpperCase()}
-              </div>
+            >
+              {reservation.name.charAt(0).toUpperCase()}
+            </div>
 
-              <div>
-                <h3
-                  className="
-text-lg
-
+            <div>
+              <h3
+                className="
+text-xl
 font-bold
 "
-                >
-                  {reservation.name}
-                </h3>
+              >
+                {reservation.name}
+              </h3>
 
-                <div
-                  className="
-flex
-items-center
-gap-2
-
+              <p
+                className="
 text-sm
-
 text-neutral-500
 
 mt-1
-"
-                >
-                  <Phone size={14} />
 
-                  {reservation.phone}
-                </div>
-              </div>
+flex
+items-center
+gap-2
+"
+              >
+                <Phone size={14} />
+
+                {reservation.phone}
+              </p>
             </div>
           </div>
 
-          {/* INFO GRID */}
+          {/* INFO */}
 
           <div
             className="
 grid
-
-grid-cols-1
-
 sm:grid-cols-2
 
 gap-4
-
 "
           >
             <Info
@@ -268,7 +248,7 @@ gap-4
 
               title="Email"
 
-              value={reservation.email}
+              value={reservation.email || '-'}
             />
 
             <Info
@@ -300,13 +280,7 @@ gap-4
 
               title="Service"
 
-              value={
-                reservation.service
-                  ? `${reservation.service.name}${
-                      reservation.service.price ? ` • ${reservation.service.price} €` : ''
-                    }`
-                  : '—'
-              }
+              value={reservation.service?.name ?? 'No service'}
             />
           </div>
 
@@ -314,26 +288,21 @@ gap-4
 
           <div
             className="
-flex
-
-items-center
-
-justify-between
-
 rounded-2xl
 
 border
-
 border-neutral-200
 dark:border-neutral-800
 
 p-4
 
+flex
+items-center
+justify-between
 "
           >
             <span
               className="
-text-sm
 text-neutral-500
 "
             >
@@ -367,45 +336,43 @@ ${
             </span>
           </div>
 
-          {/* ACTIONS */}
+          {/* BUTTONS */}
 
           <div
             className="
 grid
 
-grid-cols-1
-
-sm:grid-cols-3
+grid-cols-3
 
 gap-3
-
-pt-2
-
 "
           >
             <button
-              onClick={() => onUpdate(reservation.id, 'CONFIRMED')}
+              onClick={() => {
+                onUpdate(reservation.id, 'CONFIRMED');
+
+                onClose();
+              }}
 
               className="
+rounded-2xl
+
+bg-green-600
+
+hover:bg-green-700
+
+text-white
+
+py-4
+
+font-semibold
+
 flex
 items-center
 justify-center
 gap-2
 
-rounded-2xl
-
-bg-green-600
-
-hover:bg-green-500
-
-text-white
-
-py-3.5
-
-font-semibold
-
 transition
-
 "
             >
               <Check size={18} />
@@ -413,28 +380,31 @@ transition
             </button>
 
             <button
-              onClick={() => onUpdate(reservation.id, 'CANCELLED')}
+              onClick={() => {
+                onUpdate(reservation.id, 'CANCELLED');
+
+                onClose();
+              }}
 
               className="
+rounded-2xl
+
+bg-red-600
+
+hover:bg-red-700
+
+text-white
+
+py-4
+
+font-semibold
+
 flex
 items-center
 justify-center
 gap-2
 
-rounded-2xl
-
-bg-red-600
-
-hover:bg-red-500
-
-text-white
-
-py-3.5
-
-font-semibold
-
 transition
-
 "
             >
               <Ban size={18} />
@@ -442,14 +412,13 @@ transition
             </button>
 
             <button
-              onClick={() => onDelete(reservation.id)}
+              onClick={() => {
+                onDelete(reservation.id);
+
+                onClose();
+              }}
 
               className="
-flex
-items-center
-justify-center
-gap-2
-
 rounded-2xl
 
 bg-neutral-200
@@ -460,12 +429,16 @@ hover:bg-neutral-300
 
 dark:hover:bg-neutral-700
 
-py-3.5
+py-4
 
 font-semibold
 
-transition
+flex
+items-center
+justify-center
+gap-2
 
+transition
 "
             >
               <Trash2 size={18} />
@@ -497,12 +470,10 @@ function Info({
 rounded-2xl
 
 border
-
 border-neutral-200
 dark:border-neutral-800
 
 p-4
-
 "
     >
       <div
@@ -511,12 +482,9 @@ flex
 items-center
 gap-2
 
-text-neutral-500
-
 text-sm
 
-mb-2
-
+text-neutral-500
 "
       >
         {icon}
@@ -526,7 +494,9 @@ mb-2
 
       <p
         className="
-font-medium
+mt-2
+
+font-semibold
 
 break-all
 "

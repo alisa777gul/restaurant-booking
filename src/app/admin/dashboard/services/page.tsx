@@ -133,7 +133,7 @@ export default function ServicesPage() {
     }
   }
   return (
-    <div className="p-8 space-y-8">
+    <section className="p-8 space-y-8">
       <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Services</h1>
 
       <div
@@ -279,6 +279,6 @@ export default function ServicesPage() {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

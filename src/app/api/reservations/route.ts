@@ -13,6 +13,7 @@ export async function POST(request: Request) {
       time,
       guests,
       serviceId: rawServiceId,
+      status,
     } = await request.json();
 
     const serviceId = Number(rawServiceId);
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
         time,
         guests,
         serviceId,
-        status: 'PENDING',
+        status: status === 'CONFIRMED' ? 'CONFIRMED' : 'PENDING',
       },
       include: {
         service: true,

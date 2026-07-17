@@ -6,8 +6,8 @@ import 'react-day-picker/style.css';
 import './calendar.css';
 
 import TimeSlots from '@/components/admin/TimeSlots';
-import ReservationModal from '@/components/admin/ReservationModal';
-
+import CreateReservationModal from '@/components/admin/CreateReservationModal';
+import ReservationDetailsModal from '@/components/admin/ReservationDetailsModal';
 import { CalendarDays, Clock, Users, Phone, Mail, Sparkles } from 'lucide-react';
 
 type Service = {
@@ -52,7 +52,8 @@ const normalizeDate = (value: string) => {
 
 export default function AdminCalendar({ reservations = [], onUpdate, onDelete }: Props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
-
+  const [selectedTime, setSelectedTime] = useState('');
+  const [createModal, setCreateModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
   const selectedDay = formatDate(selectedDate);
@@ -355,7 +356,14 @@ font-medium
           {/* TIME SLOTS */}
 
           <div>
-            <TimeSlots date={selectedDay} />
+            <TimeSlots
+              date={selectedDay}
+              reservations={dayReservations}
+              onSelect={(time) => {
+                setSelectedTime(time);
+                setCreateModal(true);
+              }}
+            />
           </div>
 
           {/* EMPTY */}
@@ -673,9 +681,24 @@ break-all
           )}
         </div>
       </section>
+      {createModal && (
+        <CreateReservationModal
+          date={selectedDay}
+          time={selectedTime}
+          onClose={() => {
+            setCreateModal(false);
+            setSelectedTime('');
+          }}
+          onCreated={() => {
+            setCreateModal(false);
+            setSelectedTime('');
 
+            window.location.reload();
+          }}
+        />
+      )}
       {selectedReservation && (
-        <ReservationModal
+        <ReservationDetailsModal
           reservation={selectedReservation}
 
           onClose={() => {
