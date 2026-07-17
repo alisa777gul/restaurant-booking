@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Calendar from '@/components/Calendar';
 import Header from '@/components/home/Header';
 import Footer from '@/components/Footer';
-
+import BookingForm from '@/components/reservation/BookingForm';
 type Service = {
   id: number;
   name: string;
@@ -530,125 +530,27 @@ ${reservedTimes.includes(item) ? 'opacity-30 cursor-not-allowed line-through' : 
               </div>
             </div>
 
-            <select
-              value={guests}
+            <BookingForm
+              name={name}
 
-              onChange={(e) => setGuests(e.target.value)}
+              phone={phone}
 
-              className="
-w-full
+              email={email}
 
-rounded-2xl
+              guests={guests}
 
-bg-neutral-100
-dark:bg-neutral-900
+              loading={loading}
 
-border
+              onNameChange={setName}
 
-border-neutral-200
-dark:border-neutral-800
+              onPhoneChange={setPhone}
 
-px-5
+              onEmailChange={setEmail}
 
-py-4
+              onGuestsChange={setGuests}
 
-outline-none
-
-focus:border-blue-500
-
-transition
-
-"
-            >
-              <option value="1">1 person</option>
-
-              <option value="2">2 people</option>
-
-              <option value="3">3 people</option>
-
-              <option value="4">4 people</option>
-
-              <option value="5">5+ people</option>
-            </select>
-
-            <input
-              type="text"
-
-              placeholder="Your name"
-
-              value={name}
-
-              onChange={(e) => setName(e.target.value)}
-
-              className="
-booking-input
-"
+              onSubmit={handleSubmit}
             />
-
-            <input
-              type="tel"
-
-              placeholder="+421..."
-
-              value={phone}
-
-              onChange={(e) => setPhone(e.target.value)}
-
-              className="
-booking-input
-"
-            />
-
-            <input
-              type="email"
-
-              placeholder="email@example.com"
-
-              value={email}
-
-              onChange={(e) => setEmail(e.target.value)}
-
-              className="
-booking-input
-"
-            />
-
-            <button
-              onClick={handleSubmit}
-
-              disabled={loading}
-
-              className="
-mt-4
-
-w-full
-
-rounded-2xl
-
-bg-blue-600
-
-text-white
-
-py-4
-
-font-semibold
-
-shadow-xl
-
-shadow-blue-500/20
-
-hover:bg-blue-700
-
-hover:scale-[1.02]
-
-transition-all
-
-disabled:opacity-50
-
-"
-            >
-              {loading ? 'Creating booking...' : 'Confirm appointment'}
-            </button>
           </div>
         </div>
       </section>
